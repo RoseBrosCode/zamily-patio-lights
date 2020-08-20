@@ -1,11 +1,14 @@
 import React from 'react';
-import { HuePicker } from 'react-color';
-
+import SampledHuePicker from 'components/SampledHuePicker'
 
 export default function ColorConfig(props) {
   return (
     <div>
-      <HuePicker color={props.currentColor} onChange={props.onColorChange} />
+      <SampledHuePicker
+        defaultColors={props.defaultColors}
+        onColorChange={props.onColorChange}
+        sampleDelay={props.sampleDelay}
+      />
     </div>
   )
 }
