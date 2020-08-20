@@ -39,6 +39,7 @@ class LightsOnOff extends Component {
 
     } else {
       console.log('Unexpected event...', e)
+      // TODO show error
     }
   }
 

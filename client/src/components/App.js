@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import LightsOnOff from 'components/LightsOnOff';
+import GrillLightsControls from 'components/GrillLightsControls';
 
 function App() {
   return (
@@ -18,7 +19,9 @@ function App() {
           </Paper>
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Paper>Grill Lights Controls</Paper>
+          <Paper>
+            <GrillLightsControls />
+          </Paper>
         </Grid>
       </Grid>
     </>
