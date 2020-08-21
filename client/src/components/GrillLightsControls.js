@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -8,6 +8,7 @@ import ColorConfig from 'components/ColorConfig';
 import ColorSpeedConfig from 'components/ColorSpeedConfig';
 import RacerConfig from 'components/RacerConfig';
 import RainbowConfig from 'components/RainbowConfig';
+import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function GrillLightsControls(props) {
   // constants
@@ -65,7 +66,22 @@ export default function GrillLightsControls(props) {
     setTailLength(tailLengthVal)
   }
 
-  // set up the necessary config
+  // set effects
+  // 
+  useUpdateServer({
+    animation: animation,
+    ...color,
+    speed: speed,
+    direction: direction,
+    density: density,
+    tailLength: tailLength
+  },
+  'grill-update-url',
+  [animation, color, speed, direction, density, tailLength] 
+  )
+
+
+  // set up the necessary config to render
   let neededConfig;
   
   if (animation === 0) { // default Warm
@@ -124,15 +140,7 @@ export default function GrillLightsControls(props) {
     // TODO show error
   }
 
-  // return to render
-  console.log('rendering with state: ', {
-    animation: animation,
-    color: color,
-    speed: speed,
-    direction: direction,
-    density: density,
-    tailLength: tailLength
-  });
+  // render
   return (
     <div>
       <h2>Grill Lights Controls</h2>

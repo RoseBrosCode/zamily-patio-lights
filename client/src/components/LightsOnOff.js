@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
+import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function LightsOnOff() {
+  // set up state
   const [lightsPower, setLightsPower] = useState({
     stringsOn: false,
     grillOn: false
   });
 
+  // set up handlers
   function handleClick(e) {
     if (e.currentTarget.name === 'strings') {
       setLightsPower({
@@ -38,8 +41,15 @@ export default function LightsOnOff() {
     }
   }
 
-  console.log('current state: ', lightsPower);
+  // set effects
+  useUpdateServer({
+    ...lightsPower
+  },
+  'lights-update-url',
+  [lightsPower]
+  )
 
+  // render
   return (
     <div>
       <h2>Lights On/Off</h2>
