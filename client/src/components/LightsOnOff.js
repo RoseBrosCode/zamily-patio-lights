@@ -1,38 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 
+export default function LightsOnOff() {
+  const [lightsPower, setLightsPower] = useState({
+    stringsOn: false,
+    grillOn: false
+  });
 
-class LightsOnOff extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      stringsOn: false,
-      grillOn: false
-    };
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(e) {
+  function handleClick(e) {
     if (e.currentTarget.name === 'strings') {
-      this.setState({
+      setLightsPower({
         stringsOn: true,
         grillOn: false
       });
 
     } else if (e.currentTarget.name === 'grill') {
-      this.setState({
+      setLightsPower({
         stringsOn: false,
         grillOn: true
       });
 
     } else if (e.currentTarget.name === 'bothOn' ) {
-      this.setState({
+      setLightsPower({
         stringsOn: true,
         grillOn: true
       });
 
     } else if (e.currentTarget.name === 'bothOff') {
-      this.setState({
+      setLightsPower({
         stringsOn: false,
         grillOn: false
       });
@@ -43,47 +38,44 @@ class LightsOnOff extends Component {
     }
   }
 
-  render() { 
-    console.log('current state: ', this.state);
-    return (
-      <div>
-        <h2>Lights On/Off</h2>
-        <br />
-        <Button
-          name="strings"
-          variant="contained"
-          color={this.state.stringsOn && !this.state.grillOn ? 'primary' : 'default'}
-          onClick={this.handleClick}
-        >
-          Strings Only
-        </Button>
-        <Button
-          name="grill"
-          variant="contained"
-          color={!this.state.stringsOn && this.state.grillOn ? 'primary' : 'default'}
-          onClick={this.handleClick}
-        >
-          Grill Only
-        </Button>
-        <Button
-          name="bothOn"
-          variant="contained"
-          color={this.state.stringsOn && this.state.grillOn ? 'primary' : 'default'}
-          onClick={this.handleClick}
-        >
-          Both On
-        </Button>
-        <Button
-          name="bothOff"
-          variant="contained"
-          color={!this.state.stringsOn && !this.state.grillOn ? 'primary' : 'default'}
-          onClick={this.handleClick}
-        >
-          Both Off
-        </Button>
-      </div>
-    )
-  }
-}
+  console.log('current state: ', lightsPower);
 
-export default LightsOnOff; 
+  return (
+    <div>
+      <h2>Lights On/Off</h2>
+      <br />
+      <Button
+        name="strings"
+        variant="contained"
+        color={lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+        onClick={handleClick}
+      >
+        Strings Only
+      </Button>
+      <Button
+        name="grill"
+        variant="contained"
+        color={!lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+        onClick={handleClick}
+      >
+        Grill Only
+      </Button>
+      <Button
+        name="bothOn"
+        variant="contained"
+        color={lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+        onClick={handleClick}
+      >
+        Both On
+      </Button>
+      <Button
+        name="bothOff"
+        variant="contained"
+        color={!lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+        onClick={handleClick}
+      >
+        Both Off
+      </Button>
+    </div>
+  )
+}

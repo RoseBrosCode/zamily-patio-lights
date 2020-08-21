@@ -18,7 +18,6 @@ export default function RacerConfig(props) {
         defaultValue={props.currentSpeed}
         onChange={props.onSpeedChange}
         sampleDelay={props.sampleDelay}
-        aria-labelledby="continuous-slider"
         max={10}
         min={1}
       />
@@ -27,7 +26,6 @@ export default function RacerConfig(props) {
         defaultValue={props.currentTailLength}
         onChange={props.onTailLengthChange}
         sampleDelay={props.sampleDelay}
-        aria-labelledby="continuous-slider"
         max={500}
         min={0}
       />

@@ -1,43 +1,25 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Slider from '@material-ui/core/Slider';
-import throttle from 'lodash/throttle';
+import { useThrottledFn } from 'beautiful-react-hooks'; 
 
-class SampledSlider extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: props.defaultValue
-    };
+export default function SampledSlider(props) {
+  const [sliderValue, setSliderValue] = useState(props.defaultValue);
+  
+  const stableSliderHandler = useThrottledFn(props.onChange, props.sampleDelay, {leading: true, trailing: true}, []);
 
-    this.onStableSliderChange = props.onChange;
-    this.onEverySliderChange = this.onEverySliderChange.bind(this);
-    
-    this.throttle = throttle((fn, e, updatedVal) => {
-      fn(e, updatedVal)
-    }, props.sampleDelay)
-
+  function onEverySliderChange(e, updatedVal) {
+    stableSliderHandler(e, updatedVal)
+    setSliderValue(updatedVal)
   }
 
-  onEverySliderChange(e, updatedVal) {
-    this.throttle(this.onStableSliderChange, e, updatedVal);
-    this.setState({
-      value: updatedVal
-    })
-  }
-
-  render() {
-    return (
-        <Slider
-        value={this.state.value}
-        onChange={this.onEverySliderChange}
-        aria-labelledby="continuous-slider"
-        max={this.props.max}
-        min={this.props.min}
-        step={this.props.step ? this.props.step : 1}
-      />
-    ) 
-  }
-
+  return (
+      <Slider
+      value={sliderValue}
+      onChange={onEverySliderChange}
+      aria-labelledby="continuous-slider"
+      max={props.max}
+      min={props.min}
+      step={props.step ? props.step : 1}
+    />
+  ) 
 }
-
-export default SampledSlider;

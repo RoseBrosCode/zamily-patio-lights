@@ -17,7 +17,6 @@ export default function ColorSpeedConfig(props) {
         defaultValue={props.currentSpeed}
         onChange={props.onSpeedChange}
         sampleDelay={props.sampleDelay}
-        aria-labelledby="continuous-slider"
         max={10}
         min={1}
       />

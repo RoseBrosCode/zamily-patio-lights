@@ -11,7 +11,6 @@ export default function RainbowConfig(props) {
         defaultValue={props.currentSpeed}
         onChange={props.onSpeedChange}
         sampleDelay={props.sampleDelay}
-        aria-labelledby="continuous-slider"
         max={10}
         min={1}
       />
@@ -20,7 +19,6 @@ export default function RainbowConfig(props) {
         defaultValue={props.currentSpectralDensity}
         onChange={props.onSpectralDensityChange}
         sampleDelay={props.sampleDelay}
-        aria-labelledby="continuous-slider"
         max={1.0}
         min={0.0}
         step={0.01}

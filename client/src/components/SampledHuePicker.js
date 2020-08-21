@@ -1,36 +1,19 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { HuePicker } from 'react-color';
-import throttle from 'lodash/throttle';
+import { useThrottledFn } from 'beautiful-react-hooks'; 
 
-class SampledHuePicker extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      color: props.defaultColors
-    };
+export default function SampledHuePicker(props) {
+  const [colorValue, setColorValue] = useState(props.defaultColors)
 
-    this.onStableColorChange = props.onColorChange;
-    this.onEveryColorChange = this.onEveryColorChange.bind(this);
-    
-    this.throttle = throttle((fn, updatedColor) => {
-      fn(updatedColor)
-    }, props.sampleDelay)
+  const stableColorHandler = useThrottledFn(props.onColorChange, props.sampleDelay, {leading: true, trailing: true}, []);
 
+  function onEveryColorChange(updatedColor, e) {
+    stableColorHandler(updatedColor)
+    setColorValue(updatedColor)
   }
 
-  onEveryColorChange(updatedColor, e) {
-    this.throttle(this.onStableColorChange, updatedColor);
-    this.setState({
-      color: updatedColor
-    })
-  }
-
-  render() {
-    return (
-      <HuePicker color={this.state.color} onChange={this.onEveryColorChange} />
-    ) 
-  }
+  return (
+    <HuePicker color={colorValue} onChange={onEveryColorChange} />
+  ) 
 
 }
-
-export default SampledHuePicker;

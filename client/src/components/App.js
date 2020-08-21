@@ -6,7 +6,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import LightsOnOff from 'components/LightsOnOff';
 import GrillLightsControls from 'components/GrillLightsControls';
 
-function App() {
+export default function App() {
   return (
     // <> is shorthand for declaring a React Fragment https://reactjs.org/docs/fragments.html#short-syntax
     <>
@@ -27,5 +27,3 @@ function App() {
     </>
   );
 }
-
-export default App;
