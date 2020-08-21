@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -9,78 +9,47 @@ import ColorSpeedConfig from 'components/ColorSpeedConfig';
 import RacerConfig from 'components/RacerConfig';
 import RainbowConfig from 'components/RainbowConfig';
 
-class GrillLightsControls extends Component {
-  constructor(props) {
-    super(props);
+export default function GrillLightsControls(props) {
+  // constants
+  const DEFAULT_COLORS = {r: 252, g: 101, b: 20};
+  const SAMPLE_DELAY = 250;
+  
+  // set up states
+  const [animation, setAnimation] = useState(0); // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_MATCH: 7
+  const [color, setColor] = useState({
+    red: DEFAULT_COLORS.r, // int 0-255
+    green: DEFAULT_COLORS.g, // int 0-255
+    blue: DEFAULT_COLORS.b, // int 0-255
+  })
+  const [speed, setSpeed] = useState(5); // int 1-10
+  const [direction, setDirection] = useState(0) // int: 0 = left, 1 = right
+  const [density, setDensity] = useState(0.5) // float 0.0-1.0
+  const [tailLength, setTailLength] = useState(250) // int (0-500)
 
-    // constants 
-    this.DEFAULT_COLORS = {r: 252, g: 101, b: 20};
-    this.SAMPLE_DELAY = 250;
-
-    // initial state
-    this.state = {
-      animation: 0, // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_FREQ: 7, MUSIC_TIBMRE: 8, MUSIC_BEAT: 9    
-      red: this.DEFAULT_COLORS.r, // int 0-255
-      green: this.DEFAULT_COLORS.g, // int 0-255
-      blue: this.DEFAULT_COLORS.b, // int 0-255
-      speed: 5, // int 1-10
-      direction: 0, // int: 0 = left, 1 = right
-      density: 0.5, // float 0.0-1.0
-      tailLength: 250 // int (0-500)
-    };
-
-    // function bindings
-    this.handleAnimationChange = this.handleAnimationChange.bind(this);
-    this.handleColorChange = this.handleColorChange.bind(this);
-    this.handleSpeedChange = this.handleSpeedChange.bind(this);
-    this.handleTailLengthChange = this.handleTailLengthChange.bind(this);
-    this.handleSpectralDensityChange = this.handleSpectralDensityChange.bind(this);
-    this.handleDirectionClick = this.handleDirectionClick.bind(this);
+  // set up handlers
+  function handleAnimationChange(e) {
+    setAnimation(parseInt(e.target.value))
   }
 
-  handleAnimationChange(e) {
-    this.setState({
-      animation: parseInt(e.target.value)
-    })
-  }
-
-  handleColorChange(color, e) {
+  function handleColorChange(newColor, e) {
     console.log('color change registered');
-    this.setState({
-      red: color.rgb.r,
-      green: color.rgb.g,
-      blue: color.rgb.b
+    setColor({
+      red: newColor.rgb.r,
+      green: newColor.rgb.g,
+      blue: newColor.rgb.b
     })
   }
 
-  handleSpeedChange(e, speedVal) {
-    this.setState({
-      speed: speedVal
-    })
+  function handleSpeedChange(e, speedVal) {
+    setSpeed(speedVal)
   }
 
-  handleTailLengthChange(e, tailLengthVal) {
-    this.setState({
-      tailLength: tailLengthVal
-    })
-  }
-
-  handleSpectralDensityChange(e, densityVal) {
-    this.setState({
-      density: densityVal
-    })
-  }
-
-  handleDirectionClick(e) {
+  function handleDirectionClick(e) {
     if (e.currentTarget.name === 'leftDirectionButton') {
-      this.setState({
-        direction: 0
-      })
+      setDirection(0)
 
     } else if (e.currentTarget.name === 'rightDirectionButton') {
-      this.setState({
-        direction: 1
-      })
+      setDirection(1)
 
     } else {
       console.log('Unexpected event...', e)
@@ -88,100 +57,110 @@ class GrillLightsControls extends Component {
     }
   }
 
-  render() { 
-    const needsColorConfig = [1, 7];
-    const needsColorSpeedConfig = [3, 4, 6];
-    let neededConfig;
-
-    console.log('rendering with state: ', this.state);
-    
-    if (this.state.animation === 0) { // default Warm
-      neededConfig = <NoConfig />;
-
-    } else if (needsColorConfig.includes(this.state.animation)) {
-      neededConfig = (
-        <ColorConfig
-          defaultColors={this.DEFAULT_COLORS}
-          onColorChange={this.handleColorChange}
-          sampleDelay={this.SAMPLE_DELAY}
-        />
-      );
-
-    } else if (needsColorSpeedConfig.includes(this.state.animation)) {
-      neededConfig = (
-        <ColorSpeedConfig 
-          defaultColors={this.DEFAULT_COLORS}
-          onColorChange={this.handleColorChange}
-          currentSpeed={this.state.speed}
-          onSpeedChange={this.handleSpeedChange}
-          sampleDelay={this.SAMPLE_DELAY}
-        />
-      );
-
-    } else if (this.state.animation === 2) { // Rainbow
-      neededConfig = (
-        <RainbowConfig 
-          currentSpeed={this.state.speed}
-          onSpeedChange={this.handleSpeedChange}
-          currentSpectralDensity={this.state.density}
-          onSpectralDensityChange={this.handleSpectralDensityChange}
-          currentDirection={this.state.direction}
-          handleDirectionClick={this.handleDirectionClick}
-          sampleDelay={this.SAMPLE_DELAY}
-        />
-      );
-
-    } else if (this.state.animation === 5) { // Racer
-      neededConfig = (
-        <RacerConfig 
-          defaultColors={this.DEFAULT_COLORS}
-          onColorChange={this.handleColorChange}
-          currentSpeed={this.state.speed}
-          onSpeedChange={this.handleSpeedChange}
-          currentTailLength={this.state.tailLength}
-          onTailLengthChange={this.handleTailLengthChange}
-          currentDirection={this.state.direction}
-          handleDirectionClick={this.handleDirectionClick}
-          sampleDelay={this.SAMPLE_DELAY}
-        />
-      );
-
-    } else {
-      console.log('invalid animation enum...');
-      // TODO show error
-    }
-
-    return (
-      <div>
-        <h2>Grill Lights Controls</h2>
-        <br />
-        <FormControl>
-          <InputLabel htmlFor="animation-selector">Select Animation</InputLabel>
-          <NativeSelect
-            value={this.state.animation}
-            onChange={this.handleAnimationChange}
-            inputProps={{
-              name: 'animation',
-              id: 'animation-selector',
-            }}
-          >
-            <option aria-label="None" value="" />
-            <option value={0}>Default Warm</option>
-            <option value={1}>Solid Color</option>
-            <option value={2}>Revolving Rainbow</option>
-            <option value={3}>Breathing</option>
-            <option value={4}>Strobe</option>
-            <option value={5}>Racer</option>
-            <option value={6}>Marquee</option>
-            <option value={7}>Music Match</option>
-          </NativeSelect>
-          <FormHelperText>Make the lights dance!</FormHelperText>
-        </FormControl>
-        {neededConfig}
-      </div>
-      
-    )
+  function handleSpectralDensityChange(e, densityVal) {
+    setDensity(densityVal)
   }
-}
 
-export default GrillLightsControls; 
+  function handleTailLengthChange(e, tailLengthVal) {
+    setTailLength(tailLengthVal)
+  }
+
+  // set up the necessary config
+  let neededConfig;
+  
+  if (animation === 0) { // default Warm
+    neededConfig = <NoConfig />;
+
+  } else if ([1, 7].includes(animation)) { // Solid Color and Music Match
+    neededConfig = (
+      <ColorConfig
+        defaultColors={DEFAULT_COLORS}
+        onColorChange={handleColorChange}
+        sampleDelay={SAMPLE_DELAY}
+      />
+    );
+
+  } else if ([3, 4, 6].includes(animation)) { // Breathe, Strobe, and Marquee
+    neededConfig = (
+      <ColorSpeedConfig 
+        defaultColors={DEFAULT_COLORS}
+        onColorChange={handleColorChange}
+        currentSpeed={speed}
+        onSpeedChange={handleSpeedChange}
+        sampleDelay={SAMPLE_DELAY}
+      />
+    );
+
+  } else if (animation === 2) { // Rainbow
+    neededConfig = (
+      <RainbowConfig 
+        currentSpeed={speed}
+        onSpeedChange={handleSpeedChange}
+        currentSpectralDensity={density}
+        onSpectralDensityChange={handleSpectralDensityChange}
+        currentDirection={direction}
+        handleDirectionClick={handleDirectionClick}
+        sampleDelay={SAMPLE_DELAY}
+      />
+    );
+
+  } else if (animation === 5) { // Racer
+    neededConfig = (
+      <RacerConfig 
+        defaultColors={DEFAULT_COLORS}
+        onColorChange={handleColorChange}
+        currentSpeed={speed}
+        onSpeedChange={handleSpeedChange}
+        currentTailLength={tailLength}
+        onTailLengthChange={handleTailLengthChange}
+        currentDirection={direction}
+        handleDirectionClick={handleDirectionClick}
+        sampleDelay={SAMPLE_DELAY}
+      />
+    );
+
+  } else {
+    console.log('invalid animation enum...');
+    // TODO show error
+  }
+
+  // return to render
+  console.log('rendering with state: ', {
+    animation: animation,
+    color: color,
+    speed: speed,
+    direction: direction,
+    density: density,
+    tailLength: tailLength
+  });
+  return (
+    <div>
+      <h2>Grill Lights Controls</h2>
+      <br />
+      <FormControl>
+        <InputLabel htmlFor="animation-selector">Select Animation</InputLabel>
+        <NativeSelect
+          value={animation}
+          onChange={handleAnimationChange}
+          inputProps={{
+            name: 'animation',
+            id: 'animation-selector',
+          }}
+        >
+          <option aria-label="None" value="" />
+          <option value={0}>Default Warm</option>
+          <option value={1}>Solid Color</option>
+          <option value={2}>Revolving Rainbow</option>
+          <option value={3}>Breathing</option>
+          <option value={4}>Strobe</option>
+          <option value={5}>Racer</option>
+          <option value={6}>Marquee</option>
+          <option value={7}>Music Match</option>
+        </NativeSelect>
+        <FormHelperText>Make the lights dance!</FormHelperText>
+      </FormControl>
+      {neededConfig}
+    </div>
+    
+  )
+} 
