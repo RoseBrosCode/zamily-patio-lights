@@ -18,6 +18,7 @@ class AudioProcessor:
         self.remote_port = remote_port
 
         # Pyo client
+        # TODO: specify audio_backend when on Pi
         self.c = PyoClient(prompt_for_audio_devices=True)
 
         # How often continuous signals are sampled
@@ -60,6 +61,7 @@ class AudioProcessor:
 
 
 if __name__ == "__main__":
+    # TODO: specify proper IP/port for Particle
     audio_processor = AudioProcessor("127.0.0.1", 5000)
     try:
         signal.pause()
