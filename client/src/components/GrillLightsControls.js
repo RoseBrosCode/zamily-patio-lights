@@ -12,20 +12,21 @@ import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function GrillLightsControls(props) {
   // constants
-  const DEFAULT_COLORS = {r: 252, g: 101, b: 20};
+  const DEFAULT_COLORS = {r: props.initialState.red, g: props.initialState.green, b: props.initialState.blue};
   const SAMPLE_DELAY = 250;
-  
+  const SERVER_URL = 'https://patio.zamilyfam.com/animation';
+
   // set up states
-  const [animation, setAnimation] = useState(0); // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_MATCH: 7
+  const [animation, setAnimation] = useState(props.initialState.animation); // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_MATCH: 7
   const [color, setColor] = useState({
     red: DEFAULT_COLORS.r, // int 0-255
     green: DEFAULT_COLORS.g, // int 0-255
     blue: DEFAULT_COLORS.b, // int 0-255
   })
-  const [speed, setSpeed] = useState(5); // int 1-10
-  const [direction, setDirection] = useState(0) // int: 0 = left, 1 = right
-  const [density, setDensity] = useState(0.5) // float 0.0-1.0
-  const [tailLength, setTailLength] = useState(250) // int (0-500)
+  const [speed, setSpeed] = useState(props.initialState.speed); // int 1-10
+  const [direction, setDirection] = useState(props.initialState.direction) // int: 0 = left, 1 = right
+  const [density, setDensity] = useState(props.initialState.density) // float 0.0-1.0
+  const [tailLength, setTailLength] = useState(props.initialState.tailLength) // int (0-500)
 
   // set up handlers
   function handleAnimationChange(e) {
@@ -66,20 +67,33 @@ export default function GrillLightsControls(props) {
     setTailLength(tailLengthVal)
   }
 
-  // set effects
-  // 
-  useUpdateServer({
-    animation: animation,
-    ...color,
-    speed: speed,
-    direction: direction,
-    density: density,
-    tailLength: tailLength
-  },
-  'grill-update-url',
-  [animation, color, speed, direction, density, tailLength] 
-  )
+  // not needed now, saving for potential future use
+  // function updateEntireState(fetchedState) {
+  //   setAnimation(fetchedState.animation)
+  //   setColor({
+  //     red: fetchedState.red,
+  //     green: fetchedState.green,
+  //     blue: fetchedState.blue
+  //   })
+  //   setSpeed(fetchedState.speed)
+  //   setDirection(fetchedState.direction)
+  //   setDensity(fetchedState.density)
+  //   setTailLength(fetchedState.tailLength)
+  // }
 
+  // set effects
+  useUpdateServer(
+    {
+      animation: animation,
+      ...color,
+      speed: speed,
+      direction: direction,
+      density: density,
+      tailLength: tailLength
+    },
+    SERVER_URL,
+    [animation, color, speed, direction, density, tailLength] 
+  )
 
   // set up the necessary config to render
   let neededConfig;
@@ -141,6 +155,7 @@ export default function GrillLightsControls(props) {
   }
 
   // render
+  console.log('Grill Lights Rendered');
   return (
     <div>
       <h2>Grill Lights Controls</h2>

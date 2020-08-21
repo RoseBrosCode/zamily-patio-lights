@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import useUpdateServer from 'hooks/useUpdateServer';
 
-export default function LightsOnOff() {
+export default function LightsOnOff(props) {
+  // constants
+  const SERVER_URL = 'https://patio.zamilyfam.com/lights';
+
   // set up state
-  const [lightsPower, setLightsPower] = useState({
-    stringsOn: false,
-    grillOn: false
-  });
+  const [lightsPower, setLightsPower] = useState(props.initialState);
 
   // set up handlers
   function handleClick(e) {
@@ -42,14 +42,16 @@ export default function LightsOnOff() {
   }
 
   // set effects
-  useUpdateServer({
-    ...lightsPower
-  },
-  'lights-update-url',
-  [lightsPower]
+  useUpdateServer(
+    {
+      ...lightsPower 
+    },
+    SERVER_URL,
+    [lightsPower]
   )
 
   // render
+  console.log('Lights OnOff Rendered');
   return (
     <div>
       <h2>Lights On/Off</h2>
