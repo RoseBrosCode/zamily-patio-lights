@@ -1,0 +1,12 @@
+version: "3.4"
+
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: server/Dockerfile
+    volumes: ["./server:/server", "./client:/client"]
+    ports: ["8000:80"]
+    environment: 
+      - LOG_LEVEL=DEBUG
+      - GUNICORN_RELOAD=True
