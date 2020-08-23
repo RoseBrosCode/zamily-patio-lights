@@ -3,13 +3,17 @@ import Button from '@material-ui/core/Button';
 import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function LightsOnOff(props) {
-  // constants
-  const SERVER_URL = 'https://patio.zamilyfam.com/lights';
+  // constants //
+  const SERVER_URL = window.location + 'lights';
 
-  // set up state
+  // set up state //
   const [lightsPower, setLightsPower] = useState(props.initialState);
 
-  // set up handlers
+  // set up handlers //
+  /**
+   * Called when a user taps one of the buttons that updates the power state of the lights 
+   * @param {Object} e event from the button that was tapped the desired lighting power state
+   */
   function handleClick(e) {
     if (e.currentTarget.name === 'strings') {
       setLightsPower({
@@ -37,21 +41,21 @@ export default function LightsOnOff(props) {
 
     } else {
       console.log('Unexpected event...', e)
-      // TODO show error
+      props.setErrorMsgs(['Whoops! That is not a button we recognize...'])
     }
   }
 
-  // set effects
+  // set effects //
   useUpdateServer(
     {
       ...lightsPower 
     },
     SERVER_URL,
+    props.setErrorMsgs,
     [lightsPower]
   )
 
-  // render
-  console.log('Lights OnOff Rendered');
+  // render //
   return (
     <div>
       <h2>Lights On/Off</h2>

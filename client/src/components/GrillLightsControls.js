@@ -11,12 +11,12 @@ import RainbowConfig from 'components/RainbowConfig';
 import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function GrillLightsControls(props) {
-  // constants
+  // constants //
   const DEFAULT_COLORS = {r: props.initialState.red, g: props.initialState.green, b: props.initialState.blue};
   const SAMPLE_DELAY = 250;
-  const SERVER_URL = 'https://patio.zamilyfam.com/animation';
+  const SERVER_URL = window.location + 'animation';
 
-  // set up states
+  // set up states //
   const [animation, setAnimation] = useState(props.initialState.animation); // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_MATCH: 7
   const [color, setColor] = useState({
     red: DEFAULT_COLORS.r, // int 0-255
@@ -28,13 +28,21 @@ export default function GrillLightsControls(props) {
   const [density, setDensity] = useState(props.initialState.density) // float 0.0-1.0
   const [tailLength, setTailLength] = useState(props.initialState.tailLength) // int (0-500)
 
-  // set up handlers
+  // set up handlers //
+  /**
+   * Called when a new animation is selected from the form input
+   * @param {*} e event from the select input
+   */
   function handleAnimationChange(e) {
     setAnimation(parseInt(e.target.value))
   }
 
+  /**
+   * Called when the user has changed the slider that controls the color for a lighting animation
+   * @param {Object} newColor RGB color array to be set as the new animation color
+   * @param {Object} e Supposedly an event per https://casesandberg.github.io/react-color/#api-onChange, but ends up undefined
+   */
   function handleColorChange(newColor, e) {
-    console.log('color change registered');
     setColor({
       red: newColor.rgb.r,
       green: newColor.rgb.g,
@@ -42,10 +50,20 @@ export default function GrillLightsControls(props) {
     })
   }
 
+  /**
+   * Called when the user has changed the slider that controls the speed for a lighting animation
+   * @param {Object} e event from slider control
+   * @param {Int} speedVal Int to be set as the new speed value
+   */
   function handleSpeedChange(e, speedVal) {
+    console.log('this is the speed e', e)
     setSpeed(speedVal)
   }
 
+  /**
+   * Called when a user taps one of the buttons that control the direction of a lighting animation
+   * @param {Object} e event from the button that was tapped indicating the direction
+   */
   function handleDirectionClick(e) {
     if (e.currentTarget.name === 'leftDirectionButton') {
       setDirection(0)
@@ -55,33 +73,44 @@ export default function GrillLightsControls(props) {
 
     } else {
       console.log('Unexpected event...', e)
-      // TODO show error
+      props.setErrorMsgs(['Whoops! That is not a button we recognize...'])
     }
   }
 
+  /**
+   * Called when the user has changed the slider that controls the spectral density for a lighting animation
+   * @param {Object} e event from slider control
+   * @param {Int} densityVal Int to be set as the new density value
+   */
   function handleSpectralDensityChange(e, densityVal) {
     setDensity(densityVal)
   }
 
+  /**
+   * Called when the user has changed slider that controls the the tail length for a lighting animation
+   * @param {Object} e event from slider control
+   * @param {Int} tailLengthVal Int to be set as the new tail length value
+   */
   function handleTailLengthChange(e, tailLengthVal) {
     setTailLength(tailLengthVal)
   }
 
-  // not needed now, saving for potential future use
-  // function updateEntireState(fetchedState) {
-  //   setAnimation(fetchedState.animation)
-  //   setColor({
-  //     red: fetchedState.red,
-  //     green: fetchedState.green,
-  //     blue: fetchedState.blue
-  //   })
-  //   setSpeed(fetchedState.speed)
-  //   setDirection(fetchedState.direction)
-  //   setDensity(fetchedState.density)
-  //   setTailLength(fetchedState.tailLength)
-  // }
+  /* not needed now, saving for potential future use
+  function updateEntireState(fetchedState) {
+    setAnimation(fetchedState.animation)
+    setColor({
+      red: fetchedState.red,
+      green: fetchedState.green,
+      blue: fetchedState.blue
+    })
+    setSpeed(fetchedState.speed)
+    setDirection(fetchedState.direction)
+    setDensity(fetchedState.density)
+    setTailLength(fetchedState.tailLength)
+  }
+  */
 
-  // set effects
+  // set effects //
   useUpdateServer(
     {
       animation: animation,
@@ -92,10 +121,11 @@ export default function GrillLightsControls(props) {
       tailLength: tailLength
     },
     SERVER_URL,
+    props.setErrorMsgs,
     [animation, color, speed, direction, density, tailLength] 
   )
 
-  // set up the necessary config to render
+  // set up the necessary config to render //
   let neededConfig;
   
   if (animation === 0) { // default Warm
@@ -151,11 +181,10 @@ export default function GrillLightsControls(props) {
 
   } else {
     console.log('invalid animation enum...');
-    // TODO show error
+    props.setErrorMsgs(['Whoops! That animation is not recognized.'])
   }
 
-  // render
-  console.log('Grill Lights Rendered');
+  // render //
   return (
     <div>
       <h2>Grill Lights Controls</h2>
