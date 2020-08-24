@@ -4,6 +4,7 @@ services:
   app:
     build: 
       context: .
+      target: development
       dockerfile: server/Dockerfile
     volumes: ["./server:/server", "./client:/client"]
     ports: ["8000:80"]

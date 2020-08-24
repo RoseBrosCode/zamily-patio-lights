@@ -1,5 +1,8 @@
 FROM node:12.18.3-buster as server
 
+###################################
+# BUILD STAGE
+###################################
 # Setup server variables
 ENV GUNICORN_DIRECTORY=/server/gunicorn \
     GUNICORN_WORKERS=3 \
@@ -31,20 +34,29 @@ ENV CLIENT_DIRECTORY=/client
 WORKDIR ${CLIENT_DIRECTORY}
 
 # Install client dependencies
-COPY package.json yarn.lock ./
+COPY client/package.json client/yarn.lock ./
 RUN yarn install
 
 # Copy remaining server source
 COPY client .
 
+###################################
+# DEVELOPMENT STAGE
+###################################
 # Run both Flask server and node development server
 FROM server as development
+
 CMD ./run_development.sh
 
+###################################
+# PRODUCTION STAGE
+###################################
 # Run only Flask server with build app
 FROM server as production
 
 # Build app
-RUN yarn run build
+RUN yarn run Build
 
-CMD ./run_production.sh
+# Run server
+CMD pipenv run gunicorn --config ${GUNICORN_DIRECTORY}/gunicorn.conf.py --log-config ${GUNICORN_DIRECTORY}/logging.conf \
+    --chdir ${SERVER_MODULE} ${SERVER_DIRECTORY}
