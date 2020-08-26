@@ -1,13 +1,35 @@
 version: "3.4"
 
 services:
-  app:
+  production:
+    build: 
+      context: .
+      target: production
+      dockerfile: server/Dockerfile
+    ports: ["8000:80"]
+    environment: 
+      - LOG_LEVEL=DEBUG
+      - GUNICORN_RELOAD=True
+
+  development-server:
     build: 
       context: .
       target: development
       dockerfile: server/Dockerfile
-    volumes: ["./server:/server", "./client:/client"]
+    volumes: ["./server:/server"]
     ports: ["8000:80"]
+    environment: 
+      - LOG_LEVEL=DEBUG
+      - GUNICORN_RELOAD=True
+
+  development:
+    build: 
+      context: .
+      dockerfile: client/Dockerfile
+    depends_on: ["development-server"]
+    ports: ["3000:3000"]
+    volumes: [".:/app"]
+    stdin_open: true
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True

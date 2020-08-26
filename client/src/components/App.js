@@ -37,7 +37,7 @@ export default function App() {
   
   useEffect(() => {
     // fetch initial server state
-    fetch(SERVER_URL, {
+    fetch(SERVER_URL.current, {
       headers: {
         'Content-Type': 'application/json',
       },
