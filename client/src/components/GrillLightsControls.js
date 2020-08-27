@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,12 +11,12 @@ import RainbowConfig from 'components/RainbowConfig';
 import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function GrillLightsControls(props) {
-  // constants //
+  // constants
   const DEFAULT_COLORS = {r: props.initialState.red, g: props.initialState.green, b: props.initialState.blue};
   const SAMPLE_DELAY = 250;
-  const SERVER_URL = window.location + 'animation';
+  const ANIMATION_UPDATE_URL = useRef(window.location.origin + '/animation');
 
-  // set up states //
+  // set up states
   const [animation, setAnimation] = useState(props.initialState.animation); // enum int: WARM: 0, SOLID: 1, RAINBOW: 2, BREATHE: 3, STROBE: 4, RACER: 5, MARQUEE: 6, MUSIC_MATCH: 7
   const [color, setColor] = useState({
     red: DEFAULT_COLORS.r, // int 0-255
@@ -28,7 +28,7 @@ export default function GrillLightsControls(props) {
   const [density, setDensity] = useState(props.initialState.density) // float 0.0-1.0
   const [tailLength, setTailLength] = useState(props.initialState.tailLength) // int (0-500)
 
-  // set up handlers //
+  // set up handlers
   /**
    * Called when a new animation is selected from the form input
    * @param {*} e event from the select input
@@ -110,7 +110,7 @@ export default function GrillLightsControls(props) {
   }
   */
 
-  // set effects //
+  // set effects
   useUpdateServer(
     {
       animation: animation,
@@ -120,12 +120,12 @@ export default function GrillLightsControls(props) {
       density: density,
       tailLength: tailLength
     },
-    SERVER_URL,
+    ANIMATION_UPDATE_URL.current,
     props.setErrorMsgs,
     [animation, color, speed, direction, density, tailLength] 
   )
 
-  // set up the necessary config to render //
+  // set up the necessary config to render
   let neededConfig;
   
   if (animation === 0) { // default Warm
@@ -184,7 +184,7 @@ export default function GrillLightsControls(props) {
     props.setErrorMsgs(['Whoops! That animation is not recognized.'])
   }
 
-  // render //
+  // render
   return (
     <div>
       <h2>Grill Lights Controls</h2>
