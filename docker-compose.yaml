@@ -28,7 +28,7 @@ services:
       dockerfile: client/Dockerfile
     depends_on: ["development-server"]
     ports: ["3000:3000"]
-    volumes: [".:/app"]
+    volumes: ["./client:/client", "/client/node_modules"]
     stdin_open: true
     environment: 
       - LOG_LEVEL=DEBUG

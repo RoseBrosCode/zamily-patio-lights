@@ -1,8 +1,7 @@
-FROM node:12.18.3-buster as setup
-
 ###################################
-# BUILD STAGE
+# STAGE 1 - Install Server
 ###################################
+FROM python:3.8-slim-buster as server
 # Setup variables
 ENV GUNICORN_DIRECTORY=/server/gunicorn \
     GUNICORN_WORKERS=3 \
@@ -17,56 +16,61 @@ ENV GUNICORN_DIRECTORY=/server/gunicorn \
 WORKDIR ${GUNICORN_DIRECTORY}
 COPY server/gunicorn .
 
-# Setup pip
-WORKDIR /
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN python3 get-pip.py
-
-# Navigate to client directory
-WORKDIR ${CLIENT_DIRECTORY}
-
-# Install client dependencies
-COPY client/package.json client/yarn.lock ./
-RUN yarn install
-
 # Navigate to server directory
 WORKDIR ${SERVER_DIRECTORY}
 
 # Install server dependencies
 RUN pip install pipenv
 COPY server/Pipfile* ./
-RUN pipenv install --python 3.7.3 --deploy
+RUN pipenv install --system --deploy
 
 # Copy remaining server source
 COPY server .
 
-# Copy remaining client source
-COPY client ${CLIENT_DIRECTORY}
-
 
 ###################################
-# DEVELOPMENT STAGE
+# STAGE 2 - Development
 ###################################
-FROM setup as development
+FROM server as development
 
 # Run server
-CMD pipenv run gunicorn --config ${GUNICORN_DIRECTORY}/gunicorn.conf.py --log-config ${GUNICORN_DIRECTORY}/logging.conf \
+CMD gunicorn --config ${GUNICORN_DIRECTORY}/gunicorn.conf.py --log-config ${GUNICORN_DIRECTORY}/logging.conf \
     --chdir ${SERVER_DIRECTORY} ${SERVER_MODULE}
 
 
-###################################
-# PRODUCTION STAGE
-###################################
-# Run only Flask server with build app
-FROM setup as production
+######################################
+# STAGE 3a - Production (Build Client)
+######################################
+FROM node:12.18.3-buster-slim as build-client
+# Setup variables
+ENV CLIENT_DIRECTORY=/client
 
-# Build app
+# Navigate to client directory
 WORKDIR ${CLIENT_DIRECTORY}
-RUN yarn run build
+
+# Install client dependencies
+COPY client/package.json client/package-lock.json ./
+RUN npm install
+
+# Copy client source
+COPY client ${CLIENT_DIRECTORY}
+
+# Build client app
+RUN npm run build
+
+
+######################################
+# STAGE 4b - Production (Deploy)
+######################################
+# Run only Flask server with built app
+FROM server as production
 
 # Navigate to server directory
 WORKDIR ${SERVER_DIRECTORY}
 
+# Copy built client app
+COPY --from=build-client ${CLIENT_DIRECTORY}/build ${CLIENT_DIRECTORY}/build
+
 # Run server
-CMD pipenv run gunicorn --config ${GUNICORN_DIRECTORY}/gunicorn.conf.py --log-config ${GUNICORN_DIRECTORY}/logging.conf \
+CMD gunicorn --config ${GUNICORN_DIRECTORY}/gunicorn.conf.py --log-config ${GUNICORN_DIRECTORY}/logging.conf \
     --chdir ${SERVER_DIRECTORY} ${SERVER_MODULE}
