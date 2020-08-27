@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function LightsOnOff(props) {
-  // constants //
-  const SERVER_URL = window.location + 'lights';
+  // constants
+  const LIGHTS_UPDATE_URL = useRef(window.location.origin + '/lights');
 
-  // set up state //
+  // set up state
   const [lightsPower, setLightsPower] = useState(props.initialState);
 
-  // set up handlers //
+  // set up handlers
   /**
    * Called when a user taps one of the buttons that updates the power state of the lights 
    * @param {Object} e event from the button that was tapped the desired lighting power state
@@ -45,17 +45,17 @@ export default function LightsOnOff(props) {
     }
   }
 
-  // set effects //
+  // set effects
   useUpdateServer(
     {
       ...lightsPower 
     },
-    SERVER_URL,
+    LIGHTS_UPDATE_URL.current,
     props.setErrorMsgs,
     [lightsPower]
   )
 
-  // render //
+  // render
   return (
     <div>
       <h2>Lights On/Off</h2>

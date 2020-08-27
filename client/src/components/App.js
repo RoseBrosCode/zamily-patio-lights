@@ -10,8 +10,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorBlock from 'components/ErrorBlock'
 
 export default function App() {
-  // constants //
-  const SERVER_URL = useRef(window.location + 'state');
+  // constants
+  const STATE_URL = useRef(window.location.origin + '/state');
   const LIGHTSONOFF_FALLBACK_DEFAULT = useRef({
     stringsOn: false,
     grillOn: false
@@ -27,21 +27,17 @@ export default function App() {
     tailLength: 250
   });
 
-  // set up state //
+  // set up state
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsgs, setErrorMsgs] = useState([]);
 
-  // initialize children state from the server //
+  // initialize children state from the server
   const lightsOnOffInitial = useRef({});
   const grillLightsControlsInitial = useRef({});
   
   useEffect(() => {
     // fetch initial server state
-    fetch(SERVER_URL, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
+    fetch(STATE_URL.current)
     .then(response => {
       if (response.ok) {
         console.log('Success:', response);
@@ -97,6 +93,7 @@ export default function App() {
     }
   }
 
+  // render
   if (isLoading) {
     return (
       <Backdrop open={true} >
