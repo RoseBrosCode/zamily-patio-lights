@@ -1,6 +1,31 @@
+import os
 from flask import Flask, request, jsonify
+import abodepy
 
 app = Flask(__name__, static_folder='../client/build', static_url_path='/')
+
+abode = abodepy.Abode(username=os.environ['ABODE_USERNAME'],
+                      password=os.environ['ABODE_PASSWORD'],
+                      get_devices=True)
+
+# Set up key devices
+# Inner Patio Strings ID: ZW:00000015 UUID: 57229489a414a5e8b19c96335e646235
+abode_inner_strings = abode.get_device("ZW:00000015")
+
+# Outer Patio Strings ID: ZW:00000016 UUID: 5595485c4525585c6ebe28f5fdaceb8c
+abode_outer_strings = abode.get_device("ZW:00000016")
+
+# Patio Grill Lights ID: ZW:00000017 UUID: cd1954d5f33cf69d4172e4fe1d
+abode_grill_lights = abode.get_device("ZW:00000017")
+
+# # Below will print out id and description of all devices
+# abode_devices = []
+# for device in abode.get_devices():
+#     abode_devices.append({
+#         "id": device.device_id,
+#         "desc": device.desc
+#     })
+# app.logger.info(abode_devices)
 
 @app.route('/')
 def index():
@@ -10,6 +35,7 @@ def index():
 
 @app.route('/state', methods=['GET'])
 def get_state():
+    # TODO fetch real state and return it - below is a placeholder
     return jsonify({
         "stringsOn": False,
         "grillOn": False,
@@ -26,11 +52,29 @@ def get_state():
 
 @app.route('/animation', methods=['POST'])
 def update_animation_state():
-    app.logger.info(f"animation update: {request.json}")
+    target_animation_state = request.json
+    app.logger.info(f"animation update: {target_animation_state}")
+
+    # TODO post update to particle
+
     return '', 200
 
 
 @app.route('/lights', methods=['POST'])
 def update_lights_state():
-    app.logger.info(f"lights update: {request.json}")
+    target_light_state = request.json
+    app.logger.info(f"lights update: {target_light_state}")
+
+    if target_light_state['stringsOn']:
+        abode_inner_strings.switch_on()
+        abode_outer_strings.switch_on()
+    elif not target_light_state['stringsOn']:
+        abode_inner_strings.switch_off()
+        abode_outer_strings.switch_off()
+
+    if target_light_state['grillOn']:
+        abode_grill_lights.switch_on()
+    elif not target_light_state['grillOn']:
+        abode_grill_lights.switch_off()
+
     return '', 200
