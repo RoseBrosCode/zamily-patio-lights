@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   production:
-    build: 
+    build:
       context: .
       target: production
       dockerfile: server/Dockerfile
@@ -10,11 +10,12 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
       - ABODE_USERNAME=${ABODE_USERNAME}
       - ABODE_PASSWORD=${ABODE_PASSWORD}
 
   development-server:
-    build: 
+    build:
       context: .
       target: development
       dockerfile: server/Dockerfile
@@ -23,11 +24,12 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
       - ABODE_USERNAME=${ABODE_USERNAME}
       - ABODE_PASSWORD=${ABODE_PASSWORD}
 
   development:
-    build: 
+    build:
       context: .
       dockerfile: client/Dockerfile
     depends_on: ["development-server"]

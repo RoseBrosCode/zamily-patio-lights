@@ -1,8 +1,13 @@
 import os
-from flask import Flask, request, jsonify
 import abodepy
+from flask import Flask, request, jsonify
+
+from clients.particle import Particle
+
 
 app = Flask(__name__, static_folder='../client/build', static_url_path='/')
+
+particle = Particle()
 
 abode = abodepy.Abode(username=os.environ['ABODE_USERNAME'],
                       password=os.environ['ABODE_PASSWORD'],
@@ -35,7 +40,7 @@ state = {
 abode_inner_strings.switch_off()
 abode_outer_strings.switch_off()
 abode_grill_lights.switch_off()
-# TODO send the intiial state to particle
+particle.publish_animation_change(state)
 
 
 @app.route('/')
@@ -71,9 +76,7 @@ def get_state():
 def update_animation_state():
     target_animation_state = request.json
     app.logger.info(f"animation update: {target_animation_state}")
-
-    # TODO post update to particle
-
+    particle.publish_animation_change(target_animation_state)
     return '', 200
 
 
