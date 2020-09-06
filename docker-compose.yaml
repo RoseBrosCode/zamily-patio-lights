@@ -10,6 +10,8 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - ABODE_USERNAME=${ABODE_USERNAME}
+      - ABODE_PASSWORD=${ABODE_PASSWORD}
 
   development-server:
     build: 
@@ -21,6 +23,8 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - ABODE_USERNAME=${ABODE_USERNAME}
+      - ABODE_PASSWORD=${ABODE_PASSWORD}
 
   development:
     build: 
