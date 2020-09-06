@@ -40,7 +40,7 @@ state = {
 abode_inner_strings.switch_off()
 abode_outer_strings.switch_off()
 abode_grill_lights.switch_off()
-# TODO send the intiial state to particle
+particle.publish_animation_change(state)
 
 
 @app.route('/')
