@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify
+from clients.particle import Particle
 
 app = Flask(__name__, static_folder='../client/build', static_url_path='/')
+
+particle = Particle()
 
 @app.route('/')
 def index():
@@ -26,7 +29,7 @@ def get_state():
 
 @app.route('/animation', methods=['POST'])
 def update_animation_state():
-    app.logger.info(f"animation update: {request.json}")
+    particle.publish_animation_change(request.json)
     return '', 200
 
 

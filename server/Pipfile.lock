@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "64a48f54a86cc4cb9dbdd4b2f6560efc2ae0d92dcf94d7637b2cc21da0da2b5d"
+            "sha256": "01c21e3881e2a110b1a5e95081de3f5eb9ac6b36d29f40594ca1bee12ad9ed9a"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -125,6 +125,12 @@
             "index": "pypi",
             "version": "==20.0.4"
         },
+        "hammock": {
+            "hashes": [
+                "sha256:a535f085b7c1c10f675761a8bc8853618cbc66f80d71491eb2486e53ce1f8730"
+            ],
+            "version": "==0.2.4"
+        },
         "idna": {
             "hashes": [
                 "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6",
@@ -195,6 +201,13 @@
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.1.1"
         },
+        "pyparticleio": {
+            "hashes": [
+                "sha256:02034136580940485ada1fe38f041236705122f6468a20c027600fcea5d534c0"
+            ],
+            "index": "pypi",
+            "version": "==0.1.0"
+        },
         "requests": {
             "hashes": [
                 "sha256:b3559a131db72c33ee969480840fff4bb6dd111de7dd27c8ee1f820f4f00231b",
@@ -210,6 +223,12 @@
             ],
             "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
             "version": "==1.15.0"
+        },
+        "sseclient": {
+            "hashes": [
+                "sha256:33f45ab71bb6369025d6a1014e15f12774f7ea25b7e80eeb00bd73668d5fefad"
+            ],
+            "version": "==0.0.26"
         },
         "urllib3": {
             "hashes": [

@@ -10,6 +10,7 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
 
   development-server:
     build: 
@@ -21,6 +22,7 @@ services:
     environment: 
       - LOG_LEVEL=DEBUG
       - GUNICORN_RELOAD=True
+      - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
 
   development:
     build: 
