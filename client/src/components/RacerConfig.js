@@ -18,8 +18,9 @@ export default function RacerConfig(props) {
         defaultValue={props.currentSpeed}
         onChange={props.onSpeedChange}
         sampleDelay={props.sampleDelay}
-        max={10}
-        min={1}
+        max={1.0}
+        min={0.0}
+        step={0.01}
       />
       <p>Set the tail length:</p>
       <SampledSlider

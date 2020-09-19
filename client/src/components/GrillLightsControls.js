@@ -23,7 +23,7 @@ export default function GrillLightsControls(props) {
     green: DEFAULT_COLORS.g, // int 0-255
     blue: DEFAULT_COLORS.b, // int 0-255
   })
-  const [speed, setSpeed] = useState(props.initialState.speed); // int 1-10
+  const [speed, setSpeed] = useState(props.initialState.speed); // float 0.0-1.0
   const [direction, setDirection] = useState(props.initialState.direction) // int: 0 = left, 1 = right
   const [density, setDensity] = useState(props.initialState.density) // float 0.0-1.0
   const [tailLength, setTailLength] = useState(props.initialState.tailLength) // int (0-500)
@@ -199,7 +199,6 @@ export default function GrillLightsControls(props) {
             id: 'animation-selector',
           }}
         >
-          <option aria-label="None" value="" />
           <option value={0}>Default Warm</option>
           <option value={1}>Solid Color</option>
           <option value={2}>Revolving Rainbow</option>

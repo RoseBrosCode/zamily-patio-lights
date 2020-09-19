@@ -27,11 +27,11 @@ abode_grill_lights = abode.get_device("ZW:00000017")
 state = {
     "stringsOn": False,
     "grillOn": False,
-    "animation": 1,
+    "animation": 0,
     "red": 252,
     "green": 101,
     "blue": 20,
-    "speed": 5,
+    "speed": 0.5,
     "direction": 0,
     "density": 0.5,
     "tailLength": 250

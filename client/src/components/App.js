@@ -17,7 +17,7 @@ export default function App() {
     grillOn: false
   });
   const GRILLLIGHTSCONTROL_FALLBACK_DEFAULT = useRef({
-    animation: 1,
+    animation: 0,
     red: 252,
     green: 101,
     blue: 20,
