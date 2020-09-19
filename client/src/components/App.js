@@ -21,7 +21,7 @@ export default function App() {
     red: 252,
     green: 101,
     blue: 20,
-    speed: 5,
+    speed: 0.5,
     direction: 0,
     density: 0.5,
     tailLength: 250
