@@ -1,11 +1,14 @@
 import os
 import abodepy
+import logging
 from flask import Flask, request, jsonify
 
+from constants import FLASK_NAME, AnimationType
 from clients.particle import Particle
 
 
-app = Flask(__name__, static_folder='../client/build', static_url_path='/')
+app = Flask(FLASK_NAME, static_folder='../client/build', static_url_path='/')
+logger = logging.getLogger(FLASK_NAME)
 
 particle = Particle()
 
@@ -75,7 +78,15 @@ def get_state():
 @app.route('/animation', methods=['POST'])
 def update_animation_state():
     target_animation_state = request.json
-    app.logger.info(f"animation update: {target_animation_state}")
+
+    # if MUSIC_MATCH, turn on audio processing
+    if target_animation_state["animation"] == AnimationType.MUSIC_MATCH.value:
+        logger.info("telling raspberry pi to start processing audio")
+        particle.publish_music_processing_change(True)
+    else:
+        particle.publish_music_processing_change(False)
+
+    # change animation
     particle.publish_animation_change(target_animation_state)
     return '', 200
 
@@ -83,7 +94,7 @@ def update_animation_state():
 @app.route('/lights', methods=['POST'])
 def update_lights_state():
     target_light_state = request.json
-    app.logger.info(f"lights update: {target_light_state}")
+    logger.info(f"lights update: {target_light_state}")
 
     if target_light_state['stringsOn']:
         abode_inner_strings.switch_on()
