@@ -4,7 +4,7 @@ import logging
 from flask import Flask, request, jsonify
 
 from constants import FLASK_NAME, AnimationType
-from clients.particle import Particle
+from clients.particle import Particle, DETRANSFORMATION_FUNCTIONS
 
 
 app = Flask(FLASK_NAME, static_folder='../client/build', static_url_path='/')
@@ -26,25 +26,6 @@ abode_outer_strings = abode.get_device("ZW:00000016")
 # Patio Grill Lights ID: ZW:00000017 UUID: cd1954d5f33cf69d4172e4fe1d
 abode_grill_lights = abode.get_device("ZW:00000017")
 
-# initialize state with opinionated defaults and set it in the real world
-state = {
-    "stringsOn": False,
-    "grillOn": False,
-    "animation": 0,
-    "red": 252,
-    "green": 101,
-    "blue": 20,
-    "speed": 0.5,
-    "direction": 0,
-    "density": 0.5,
-    "tailLength": 250
-}
-
-abode_inner_strings.switch_off()
-abode_outer_strings.switch_off()
-abode_grill_lights.switch_off()
-particle.publish_animation_change(state)
-
 
 @app.route('/')
 def index():
@@ -55,10 +36,11 @@ def index():
 @app.route('/state', methods=['GET'])
 def get_state():
     """
-    Fetch the latest abode state and update the state obj before sending.
-    With no way to change state beyond this app, assume server state === photon state.
+    Fetch the latest abode state and the photon state and update the state obj before sending.
     """
-    # Refresh device state
+    state = {}
+
+    # Refresh abode device state
     abode_inner_strings.refresh()
     abode_grill_lights.refresh()
 
@@ -72,12 +54,18 @@ def get_state():
     else:
         state['grillOn'] = False
 
+    # Get photon state
+    photon_state = particle.get_current_state()
+    detransformed_photon_state = { k: DETRANSFORMATION_FUNCTIONS.get(k)(v) if k in DETRANSFORMATION_FUNCTIONS.keys() else v for k, v in photon_state.items() }
+    state.update(detransformed_photon_state)
+
     return jsonify(state), 200
 
 
 @app.route('/animation', methods=['POST'])
 def update_animation_state():
     target_animation_state = request.json
+    target_animation_state = {k: v for k, v in target_animation_state.items() if k not in ["stringsOn", "grillOn"]}
 
     # if MUSIC_MATCH, turn on audio processing
     if target_animation_state["animation"] == AnimationType.MUSIC_MATCH.value:
@@ -99,18 +87,13 @@ def update_lights_state():
     if target_light_state['stringsOn']:
         abode_inner_strings.switch_on()
         abode_outer_strings.switch_on()
-        state['stringsOn'] = True
     elif not target_light_state['stringsOn']:
         abode_inner_strings.switch_off()
         abode_outer_strings.switch_off()
-        state['stringsOn'] = False
 
     if target_light_state['grillOn']:
         abode_grill_lights.switch_on()
-        state['grillOn'] = True
     elif not target_light_state['grillOn']:
         abode_grill_lights.switch_off()
-        state['grillOn'] = False
-
 
     return '', 200

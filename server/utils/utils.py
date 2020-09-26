@@ -12,6 +12,19 @@ def denormalize_to_range(value, range_min, range_max):
     """
     return (value * (range_max - range_min)) + range_min
 
+
+def normalize_from_range(value, range_min, range_max):
+    """Takes a value and normalizes it with respect to a specified range.
+    Args:
+        value (float): A float value to normalize.
+        range_min (float): The minimum of the range to normalize within.
+        range_max (float): The maximum of the range to normalize within.
+    Returns:
+        float: Normalized value. Will be in range [0.0, 1.0] if value is in range [range_min, range_max].
+    """
+    return (value - range_min) / (range_max - range_min)
+
+
 def quantize(value, quant):
     """Quantizes a value to the closest value in a list of quantized values.
     Args:

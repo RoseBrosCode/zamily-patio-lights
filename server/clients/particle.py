@@ -5,7 +5,7 @@ from typing import Dict
 from pyparticleio.ParticleCloud import ParticleCloud
 
 from constants import FLASK_NAME, AnimationType
-from utils.utils import denormalize_to_range, quantize
+from utils.utils import denormalize_to_range, normalize_from_range, quantize
 
 
 PHOTON_DEVICE_ID = "1d0038000847353138383138"
@@ -16,14 +16,16 @@ PHOTON_MUSIC_PROCESSING_EVENT_NAME = "zamily-patio-music-processing"
 logger = logging.getLogger(FLASK_NAME)
 
 
-def transform_speed(speed):
-    """Transforms speed from 0.0-1.0 float to a frame counter value for the photon."""
-    return quantize(denormalize_to_range(speed, 15, 0), list(range(16)))
-
-
 TRANSFORMATION_FUNCTIONS = {
-    "speed": transform_speed,
+    # Transforms speed from 0.0-1.0 float to a frame counter value for the photon.
+    "speed": lambda s: quantize(denormalize_to_range(s, 15, 0), list(range(16))),
     "density": lambda d: denormalize_to_range(d, 0.0, 0.99)
+}
+
+DETRANSFORMATION_FUNCTIONS = {
+    # Detransforms speed from a frame counter value from the photon to a 0.0-1.0 float for the client.
+    "speed": lambda s: normalize_from_range(s, 15, 0),
+    "density": lambda d: normalize_from_range(d, 0.0, 0.99)
 }
 
 
@@ -53,8 +55,7 @@ class Particle:
             state (Dict): Dictionary representing the desired animation state.
         """
         transformed_state = { k: TRANSFORMATION_FUNCTIONS.get(k)(v) if k in TRANSFORMATION_FUNCTIONS.keys() else v for k, v in state.items() }
-        data_dict = { k: v for k, v in transformed_state.items() if k in ANIMATION_PARAMETERS.get(AnimationType(state.get("animation", 0)), []) + ["animation"] }
-        data = json.dumps(data_dict)
+        data = json.dumps(transformed_state)
         self.photon.publish(PHOTON_ANIMATION_EVENT_NAME, data)
 
     def publish_music_processing_change(self, value: bool):
@@ -64,3 +65,11 @@ class Particle:
             value (bool): Whether music processing should be on or off.
         """
         self.photon.publish(PHOTON_MUSIC_PROCESSING_EVENT_NAME, int(value))
+
+    def get_current_state(self):
+        """Gets the curentState variable from the Photon."""
+        try:
+            return json.loads(self.photon.currentState)
+        except Exception as e:
+            logger.error(f"error getting Photon state: {e}")
+        return {}
