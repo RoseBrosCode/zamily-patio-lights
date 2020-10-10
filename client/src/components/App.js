@@ -1,13 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-// import { makeStyles } from '@material-ui/core/styles';
+// import { styled } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import LightsOnOff from 'components/LightsOnOff';
 import GrillLightsControls from 'components/GrillLightsControls';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorBlock from 'components/ErrorBlock'
+
+// const StyledLightsOnOff = styled(LightsOnOff)({
+//   margin: '15px'
+// });
 
 export default function App() {
   // constants
@@ -105,20 +110,23 @@ export default function App() {
       // <> is shorthand for declaring a React Fragment https://reactjs.org/docs/fragments.html#short-syntax
       <>
         <CssBaseline />
-        <h1>Zamily Patio Controller</h1>
-        <ErrorBlock errorMsgs={errorMsgs} setErrorMsgs={setErrorMsgs}/>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Paper>
-              <LightsOnOff currentErrors={errorMsgs} setErrorMsgs={updateErrors} initialState={lightsOnOffInitial.current} />
-            </Paper>
+        <Container>
+          <h1>Zamily Patio Controller</h1>
+          <p>Work in Progress</p>
+          <ErrorBlock errorMsgs={errorMsgs} setErrorMsgs={setErrorMsgs}/>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Paper>
+                <LightsOnOff currentErrors={errorMsgs} setErrorMsgs={updateErrors} initialState={lightsOnOffInitial.current} />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Paper>
+                <GrillLightsControls currentErrors={errorMsgs} setErrorMsgs={updateErrors} initialState={grillLightsControlsInitial.current} />
+              </Paper>
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <Paper>
-              <GrillLightsControls currentErrors={errorMsgs} setErrorMsgs={updateErrors} initialState={grillLightsControlsInitial.current} />
-            </Paper>
-          </Grid>
-        </Grid>
+        </Container>
       </>
     );
   }

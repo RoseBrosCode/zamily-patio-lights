@@ -1,6 +1,7 @@
 # Custom
 .vscode
 server/abode.pickle
+server/Zamily-Patio-Lights-fb41f19fdfe1.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

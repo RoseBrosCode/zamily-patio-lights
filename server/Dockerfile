@@ -10,8 +10,8 @@ ENV GUNICORN_DIRECTORY=/server/gunicorn \
     GUNICORN_BIND=0.0.0.0:80 \
     SERVER_MODULE=main:app \
     SERVER_DIRECTORY=/server \
-    CLIENT_DIRECTORY=/client
-
+    CLIENT_DIRECTORY=/client 
+    
 # Setup gunicorn config
 WORKDIR ${GUNICORN_DIRECTORY}
 COPY server/gunicorn .
