@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import Box from '@material-ui/core/Box';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
@@ -186,8 +187,8 @@ export default function GrillLightsControls(props) {
 
   // render
   return (
-    <div>
-      <h2>Grill Lights Controls</h2>
+    <Box p={2}>
+      <Box fontWeight="fontWeightBold" fontSize="1.5em">Control Grill Lights</Box>
       <br />
       <FormControl>
         <InputLabel htmlFor="animation-selector">Select Animation</InputLabel>
@@ -211,7 +212,7 @@ export default function GrillLightsControls(props) {
         <FormHelperText>Make the lights dance!</FormHelperText>
       </FormControl>
       {neededConfig}
-    </div>
+    </Box>
     
   )
 } 

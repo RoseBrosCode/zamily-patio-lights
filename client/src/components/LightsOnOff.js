@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import useUpdateServer from 'hooks/useUpdateServer';
 
 export default function LightsOnOff(props) {
@@ -56,9 +57,10 @@ export default function LightsOnOff(props) {
   )
 
   // render
+  console.log("rendered LightsOnOff.js");
   return (
-    <div>
-      <h2>Lights On/Off</h2>
+    <Box p={2}>
+      <Box fontWeight="fontWeightBold" fontSize="1.5em">Turn Lights On/Off</Box>
       <br />
       <Button
         name="strings"
@@ -92,6 +94,6 @@ export default function LightsOnOff(props) {
       >
         Both Off
       </Button>
-    </div>
+    </Box>
   )
 }
