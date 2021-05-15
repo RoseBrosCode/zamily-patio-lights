@@ -22,7 +22,7 @@ export default function ErrorBlock(props) {
 
   return (
     <>
-      <Box p={2}>
+      <Box pb={2}>
         {props.errorMsgs.length > 0 &&
           <div>
             <div>

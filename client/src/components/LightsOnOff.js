@@ -1,14 +1,73 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import useUpdateServer from 'hooks/useUpdateServer';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ErrorBlock from 'components/ErrorBlock'
 
-export default function LightsOnOff(props) {
+export default function LightsOnOff() {
   // constants
+  const STATE_URL = useRef(window.location.origin + '/state?component=power');
   const LIGHTS_UPDATE_URL = useRef(window.location.origin + '/lights');
+  const LIGHTSONOFF_FALLBACK_DEFAULT = useRef({
+    stringsOn: false,
+    grillOn: false
+  });
 
   // set up state
-  const [lightsPower, setLightsPower] = useState(props.initialState);
+  const [lightsPower, setLightsPower] = useState(LIGHTSONOFF_FALLBACK_DEFAULT.current);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsgs, setErrorMsgs] = useState([]);
+
+  /**
+   * Adds an array of error strings to the existing state.
+   * @param {Array} errArray Each element is a user-facing error message string.
+   */
+  function updateErrors(errArray) {
+    if (!errArray.some( el => errorMsgs.includes(el))){ // don't duplicate errors. h/t https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript
+      setErrorMsgs([...errorMsgs].concat(errArray))
+    }
+  }
+
+  // get state from server
+  useEffect(() => {    
+    // fetch initial server state
+    fetch(STATE_URL.current)
+    .then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          console.log('Success:', data);
+          if ("stringsOn" in data && "grillOn" in data) {
+            // power data should be good to go
+            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message - success lights fetch"])
+            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message 2 - success lights fetch 2"])
+            setLightsPower({
+              stringsOn: data.stringsOn,
+              grillOn: data.grillOn
+            });
+          } else {
+            setErrorMsgs(errorMsgs => [...errorMsgs, "Couldn't read the current power state of the lights from the server. Arbitrary defaults set."])
+          }
+          setIsLoading(false)
+        })
+        .catch((error) => { // handle issue parsing JSON
+          console.log('Issue parsing JSON! Error: ', error);
+          setErrorMsgs(errorMsgs => [...errorMsgs, 'Warning - the state of the lights was not successfully received from the server. Arbitrary defaults set'])
+          setIsLoading(false)
+        });
+      } else {
+        console.log('Issue with Response: ', response);
+        setErrorMsgs(errorMsgs => [...errorMsgs, 'Warning - the state of the lights was not successfully received from the server. Arbitrary defaults set'])
+        setIsLoading(false)
+      }
+    })
+    .catch((error) => {
+      console.error('Error from the fetch:', error);
+      setErrorMsgs(errorMsgs => [...errorMsgs, 'Warning - the state of the lights was not successfully received from the server. Arbitrary defaults set'])
+      setIsLoading(false)
+    });
+    
+  }, [])
 
   // set up handlers
   /**
@@ -42,7 +101,7 @@ export default function LightsOnOff(props) {
 
     } else {
       console.log('Unexpected event...', e)
-      props.setErrorMsgs(['Whoops! That is not a button we recognize...'])
+      setErrorMsgs([...errorMsgs, 'Whoops! That is not a button we recognize...'])
     }
   }
 
@@ -52,48 +111,57 @@ export default function LightsOnOff(props) {
       ...lightsPower 
     },
     LIGHTS_UPDATE_URL.current,
-    props.setErrorMsgs,
-    [lightsPower]
+    updateErrors,
+    [lightsPower],
+    isLoading
   )
 
   // render
-  console.log("rendered LightsOnOff.js");
-  return (
-    <Box p={2}>
-      <Box fontWeight="fontWeightBold" fontSize="1.5em">Turn Lights On/Off</Box>
-      <br />
-      <Button
-        name="strings"
-        variant="contained"
-        color={lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
-        onClick={handleClick}
-      >
-        Strings Only
-      </Button>
-      <Button
-        name="grill"
-        variant="contained"
-        color={!lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
-        onClick={handleClick}
-      >
-        Grill Only
-      </Button>
-      <Button
-        name="bothOn"
-        variant="contained"
-        color={lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
-        onClick={handleClick}
-      >
-        Both On
-      </Button>
-      <Button
-        name="bothOff"
-        variant="contained"
-        color={!lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
-        onClick={handleClick}
-      >
-        Both Off
-      </Button>
-    </Box>
-  )
+  if (isLoading) {
+    return (
+      <CircularProgress />
+    )
+  } else {
+    console.log("rendered LightsOnOff.js");
+    return (
+      <Box p={2}>
+        <Box pb={2} fontWeight="fontWeightBold" fontSize="1.5em">Turn Lights On/Off</Box>
+        {errorMsgs.length > 0 &&
+          <ErrorBlock errorMsgs={errorMsgs} setErrorMsgs={setErrorMsgs}/>
+        }
+        <Button
+          name="strings"
+          variant="contained"
+          color={lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+          onClick={handleClick}
+        >
+          Strings Only
+        </Button>
+        <Button
+          name="grill"
+          variant="contained"
+          color={!lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+          onClick={handleClick}
+        >
+          Grill Only
+        </Button>
+        <Button
+          name="bothOn"
+          variant="contained"
+          color={lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+          onClick={handleClick}
+        >
+          Both On
+        </Button>
+        <Button
+          name="bothOff"
+          variant="contained"
+          color={!lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+          onClick={handleClick}
+        >
+          Both Off
+        </Button>
+      </Box>
+    )
+  }
 }
