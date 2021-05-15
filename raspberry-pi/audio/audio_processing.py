@@ -1,5 +1,16 @@
+import time
+import logging
+
+# Define log file
+filename = f'audio-processing-{time.time()}.log'
+# Ensure log file exists
+open(filename, "a+")
+# Configure logging to file
+logging.basicConfig(filename=filename, level=logging.DEBUG)
+# Configure logging to stderr
+logging.getLogger().addHandler(logging.StreamHandler())
+
 import os
-import sys
 import signal
 import json
 
@@ -63,8 +74,8 @@ class AudioProcessor:
             # Follows envelope of expanded signal
             amp = self.follower.get()
             
-            # Approximate max of 10
-            val = min(amp/10, 1.0)
+            # Adjust signal and clamp at 1.0
+            val = min(amp / 2, 1.0)
 
             # Send to Particle
             self.vol_sender.send([val])
@@ -90,10 +101,10 @@ if __name__ == "__main__":
         # data is 0 or 1
         value = int(data)
         if value:
-            print("starting audio processing")
+            logging.debug("starting audio processing")
             audio_processor.state = APStates.VOL
         else:
-            print("stopping audio processing")
+            logging.debug("stopping audio processing")
             audio_processor.state = APStates.OFF
 
     photon.cloud_subscribe(PHOTON_MUSIC_PROCESSING_EVENT_NAME, handle_music_processing_event)
