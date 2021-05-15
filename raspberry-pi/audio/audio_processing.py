@@ -1,8 +1,12 @@
+import os
 import time
 import logging
 
 # Define log file
 filename = f'audio-processing-{time.time()}.log'
+pi_dir = "/home/pi/zamily-patio-lights/raspberry-pi/audio"
+if os.path.isdir(pi_dir):
+    filename = os.path.join(pi_dir, filename)
 # Ensure log file exists
 open(filename, "a+")
 # Configure logging to file
@@ -10,7 +14,6 @@ logging.basicConfig(filename=filename, level=logging.DEBUG)
 # Configure logging to stderr
 logging.getLogger().addHandler(logging.StreamHandler())
 
-import os
 import signal
 import json
 
