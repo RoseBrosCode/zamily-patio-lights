@@ -1,9 +1,9 @@
 import os
-import time
+import datetime
 import logging
 
 # Define log file
-filename = f'audio-processing-{time.time()}.log'
+filename = f'audio-processing-{datetime.date.today().strftime("%b-%d-%Y")}.log'
 pi_dir = "/home/pi/zamily-patio-lights/raspberry-pi/audio"
 if os.path.isdir(pi_dir):
     filename = os.path.join(pi_dir, filename)
@@ -73,15 +73,18 @@ class AudioProcessor:
 
     def process(self):
         """Called every self.rate seconds, grabs audio features and sends them over OSC."""
-        if self.state == APStates.VOL:
-            # Follows envelope of expanded signal
-            amp = self.follower.get()
-            
-            # Adjust signal and clamp at 1.0
-            val = min(amp / 2, 1.0)
+        try:
+            if self.state == APStates.VOL:
+                # Follows envelope of expanded signal
+                amp = self.follower.get()
 
-            # Send to Particle
-            self.vol_sender.send([val])
+                # Adjust signal and clamp at 1.0
+                val = min(amp / 2, 1.0)
+
+                # Send to Particle
+                self.vol_sender.send([val])
+        except Exception as e:
+            logging.error(f"error in processing: {e}")
 
     def stop(self):
         """Stops the audio server, allowing the program to exit."""
