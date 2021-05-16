@@ -24,19 +24,24 @@ export default function LightsOnOff() {
    * @param {Array} errArray Each element is a user-facing error message string.
    */
   function updateErrors(errArray) {
-    if (!errArray.some( el => errorMsgs.includes(el))){ // don't duplicate errors. h/t https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript
-      setErrorMsgs([...errorMsgs].concat(errArray))
-    }
+    let newUniqueErrors = [];
+    errArray.forEach(el => {
+      if (!errorMsgs.includes(el)) {
+        newUniqueErrors.push(el)
+      }
+    });
+    setErrorMsgs([...errorMsgs].concat(newUniqueErrors))
   }
 
   // get state from server
+  // TODO - centralize this and the very similar code from GrillLightsControls.js into a shared custom hook. Refactor to use async/await at that time too.
   useEffect(() => {    
     // fetch initial server state
     fetch(STATE_URL.current)
     .then(response => {
       if (response.ok) {
         response.json().then(data => {
-          console.log('Success:', data);
+          console.log('Lights State Fetch Response::', data);
           if ("stringsOn" in data && "grillOn" in data) {
             // power data should be good to go
             // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message - success lights fetch"])
@@ -112,17 +117,18 @@ export default function LightsOnOff() {
     },
     LIGHTS_UPDATE_URL.current,
     updateErrors,
-    [lightsPower],
-    isLoading
+    isLoading,
+    [lightsPower]
   )
 
   // render
   if (isLoading) {
     return (
-      <CircularProgress />
+      <Box display="flex" justifyContent="center" p={2}>
+        <CircularProgress />
+      </Box>
     )
   } else {
-    console.log("rendered LightsOnOff.js");
     return (
       <Box p={2}>
         <Box pb={2} fontWeight="fontWeightBold" fontSize="1.5em">Turn Lights On/Off</Box>

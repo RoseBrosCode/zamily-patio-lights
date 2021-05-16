@@ -1,10 +1,11 @@
 import { useUpdateEffect } from 'react-use';
 
-export default function useUpdateServer(updateData, updateURL, setErrorMsgs, deps, isLoading) {
+export default function useUpdateServer(updateData, updateURL, setErrorMsgs, isLoading, deps) {
   useUpdateEffect(() => {
 
+    // TODO - update to use async/await
     if (isLoading) { 
-      console.log('Not fetching data - still loading.')
+      console.log('Not sending data - still loading.')
     } else {
       console.log('Sending data: ', updateData);
       console.log('Sending to: ', updateURL)
@@ -17,15 +18,15 @@ export default function useUpdateServer(updateData, updateURL, setErrorMsgs, dep
       })
       .then(response => {
         if (response.ok) {
-          console.log('Success:', response);
+          console.log('Response to server update request:', response);
         } else {
           console.log('Issue with Response: ', response);
-          setErrorMsgs(['Update failed - there was an issue contacting the server.'])
+          setErrorMsgs(['Update failed - there was an issue updating the server.'])
         }
       })
       .catch((error) => {
         console.error('Error:', error);
-        setErrorMsgs(['Update failed - there was an issue contacting the server.'])
+        setErrorMsgs(['Update failed - there was an issue updating the server.'])
       });
     } 
   }, deps)

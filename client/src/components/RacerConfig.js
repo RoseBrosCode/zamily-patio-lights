@@ -1,4 +1,5 @@
 import React from 'react';
+import Box from '@material-ui/core/Box';
 import SampledHuePicker from 'components/SampledHuePicker'
 import SampledSlider from 'components/SampledSlider';
 import DirectionButtons from 'components/DirectionButtons';
@@ -7,13 +8,13 @@ import DirectionButtons from 'components/DirectionButtons';
 export default function RacerConfig(props) {
   return (
     <div>
-      <p>Pick a color:</p>
+      <Box>Pick a color:</Box>
       <SampledHuePicker
         defaultColors={props.defaultColors}
         onColorChange={props.onColorChange}
         sampleDelay={props.sampleDelay}
       />
-      <p>Pick a speed:</p>
+      <Box>Pick a speed:</Box>
       <SampledSlider
         defaultValue={props.currentSpeed}
         onChange={props.onSpeedChange}
@@ -22,7 +23,7 @@ export default function RacerConfig(props) {
         min={0.0}
         step={0.01}
       />
-      <p>Set the tail length:</p>
+      <Box>Set the tail length:</Box>
       <SampledSlider
         defaultValue={props.currentTailLength}
         onChange={props.onTailLengthChange}

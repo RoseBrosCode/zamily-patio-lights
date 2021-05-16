@@ -12,6 +12,7 @@ import RainbowConfig from 'components/RainbowConfig';
 import useUpdateServer from 'hooks/useUpdateServer';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorBlock from 'components/ErrorBlock'
+import Divider from '@material-ui/core/Divider';
 
 export default function GrillLightsControls(props) {
   // constants
@@ -48,10 +49,14 @@ export default function GrillLightsControls(props) {
    * Adds an array of error strings to the existing state.
    * @param {Array} errArray Each element is a user-facing error message string.
    */
-    function updateErrors(errArray) {
-    if (!errArray.some( el => errorMsgs.includes(el))){ // don't duplicate errors. h/t https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript
-      setErrorMsgs([...errorMsgs].concat(errArray))
-    }
+  function updateErrors(errArray) {
+    let newUniqueErrors = [];
+    errArray.forEach(el => {
+      if (!errorMsgs.includes(el)) {
+        newUniqueErrors.push(el)
+      }
+    });
+    setErrorMsgs([...errorMsgs].concat(newUniqueErrors))
   }
 
   /**
@@ -134,14 +139,15 @@ export default function GrillLightsControls(props) {
   }
 
   // get state from server
+  // TODO - centralize this and the very similar code from LightsOnOff.js into a shared custom hook. Refactor to use async/await at that time too.
   useEffect(() => {    
     // fetch initial server state
     fetch(STATE_URL.current)
     .then(response => {
       if (response.ok) {
         response.json().then(data => {
-          console.log('Success:', data);
-          if ("animation" in data && "r" in data && "g" in data && "b" in data && "speed" in data && "direction" in data && "density" in data && "tailLength" in data) {
+          console.log('Animations State Fetch Response:', data);
+          if (["animation", "r", "g", "b", "speed", "direction", "density", "tailLength"].every(e => e in data)) {
             // animation data should be good to go
             // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message - success ani fetch"])
             // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message 2 - success ani fetch 2"])
@@ -182,8 +188,8 @@ export default function GrillLightsControls(props) {
     },
     ANIMATION_UPDATE_URL.current,
     updateErrors,
-    [animation, color, speed, direction, density, tailLength],
-    isLoading 
+    isLoading,
+    [animation, color, speed, direction, density, tailLength]     
   )
 
   // set up the necessary config to render
@@ -248,7 +254,9 @@ export default function GrillLightsControls(props) {
   // render
   if (isLoading) {
     return (
-      <CircularProgress />
+      <Box display="flex" justifyContent="center" p={2}>
+        <CircularProgress />
+      </Box>
     )
   } else {
     return (
@@ -278,6 +286,9 @@ export default function GrillLightsControls(props) {
           </NativeSelect>
           <FormHelperText>Make the lights dance!</FormHelperText>
         </FormControl>
+        <Box py={2}>
+          <Divider />
+        </Box>
         {neededConfig}
       </Box>
       
