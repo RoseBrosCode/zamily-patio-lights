@@ -24,13 +24,9 @@ export default function LightsOnOff() {
    * @param {Array} errArray Each element is a user-facing error message string.
    */
   function updateErrors(errArray) {
-    let newUniqueErrors = [];
-    errArray.forEach(el => {
-      if (!errorMsgs.includes(el)) {
-        newUniqueErrors.push(el)
-      }
-    });
-    setErrorMsgs([...errorMsgs].concat(newUniqueErrors))
+    if (!errArray.some( el => errorMsgs.includes(el))){ // don't duplicate errors. h/t https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript
+      setErrorMsgs([...errorMsgs].concat(errArray))
+    }
   }
 
   // get state from server
