@@ -38,28 +38,42 @@ def get_state():
     """
     Fetch the latest abode state and the photon state and update the state obj before sending.
     """
-    state = {}
+    full_state = {}
 
-    # Refresh abode device state
-    abode_inner_strings.refresh()
-    abode_grill_lights.refresh()
+    if request.args.get('component') is None or request.args.get('component') == 'power':
+        power_state = {}
 
-    if abode_inner_strings.is_on: # assume inner and outer strings are same - choosing inner here is arbitrary
-        state['stringsOn'] = True
+        # Refresh abode device state
+        abode_inner_strings.refresh()
+        abode_grill_lights.refresh()
+
+        if abode_inner_strings.is_on: # assume inner and outer strings are same - choosing inner here is arbitrary
+            power_state['stringsOn'] = True
+        else:
+            power_state['stringsOn'] = False
+
+        if abode_grill_lights.is_on: 
+            power_state['grillOn'] = True
+        else:
+            power_state['grillOn'] = False
+
+        # Add power state to full state
+        full_state.update(power_state)
+
+    if request.args.get('component') is None or request.args.get('component') == 'animation':
+        # Get photon state which has animation info
+        photon_state = particle.get_current_state()
+        animation_state = { k: DETRANSFORMATION_FUNCTIONS.get(k)(v) if k in DETRANSFORMATION_FUNCTIONS.keys() else v for k, v in photon_state.items() }
+        
+        # Add animation state to full state
+        full_state.update(animation_state)
+
+    if request.args.get('component') == 'power':
+        return jsonify(power_state), 200
+    elif request.args.get('component') == 'animation':
+        return jsonify(animation_state), 200
     else:
-        state['stringsOn'] = False
-
-    if abode_grill_lights.is_on: 
-        state['grillOn'] = True
-    else:
-        state['grillOn'] = False
-
-    # Get photon state
-    photon_state = particle.get_current_state()
-    detransformed_photon_state = { k: DETRANSFORMATION_FUNCTIONS.get(k)(v) if k in DETRANSFORMATION_FUNCTIONS.keys() else v for k, v in photon_state.items() }
-    state.update(detransformed_photon_state)
-
-    return jsonify(state), 200
+        return jsonify(full_state), 200
 
 
 @app.route('/animation', methods=['POST'])

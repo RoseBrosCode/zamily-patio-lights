@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Box from '@material-ui/core/Box';
 import { HuePicker } from 'react-color';
 import { useThrottledFn } from 'beautiful-react-hooks'; 
 
@@ -13,7 +14,9 @@ export default function SampledHuePicker(props) {
   }
 
   return (
-    <HuePicker color={colorValue} onChange={onEveryColorChange} />
+    <Box py={2.5}>
+      <HuePicker color={colorValue} onChange={onEveryColorChange} />
+    </Box>
   ) 
 
 }
