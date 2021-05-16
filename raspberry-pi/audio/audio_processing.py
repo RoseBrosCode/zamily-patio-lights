@@ -1,12 +1,24 @@
 import os
 import sys
 import signal
+import json
 
+from dotenv import load_dotenv
+load_dotenv()
+
+from pyparticleio.ParticleCloud import ParticleCloud
 from pyo import *
+
 from pyo_client import PyoClient
 
 
+PHOTON_DEVICE_ID = "1d0038000847353138383138"
+PHOTON_DEVICE_NAME = "zamily-patio"
+PHOTON_MUSIC_PROCESSING_EVENT_NAME = "zamily-patio-music-processing"
+
+
 class APStates:
+    OFF = "off"
     VOL = "vol"
 
 
@@ -18,8 +30,10 @@ class AudioProcessor:
         self.remote_port = remote_port
 
         # Pyo client
-        # TODO: specify audio_backend when on Pi
-        self.c = PyoClient(prompt_for_audio_devices=True)
+        if os.environ.get("PI"):
+            self.c = PyoClient(audio_backend='jack')
+        else:
+            self.c = PyoClient(prompt_for_audio_devices=True)
 
         # How often continuous signals are sampled
         self.rate = 0.05
@@ -41,7 +55,7 @@ class AudioProcessor:
         self.pattern.play()
 
         # State of the audio processor
-        self.state = APStates.VOL
+        self.state = APStates.OFF
 
     def process(self):
         """Called every self.rate seconds, grabs audio features and sends them over OSC."""
@@ -61,8 +75,30 @@ class AudioProcessor:
 
 
 if __name__ == "__main__":
-    # TODO: specify proper IP/port for Particle
-    audio_processor = AudioProcessor("127.0.0.1", 5000)
+    # Setup particle connection
+    pc = ParticleCloud(os.environ.get("PARTICLE_ACCESS_TOKEN"), device_ids=[PHOTON_DEVICE_ID])
+    photon = pc.devices.get(PHOTON_DEVICE_NAME)
+
+    # Setup audio processor
+    audio_processor = AudioProcessor("192.168.86.127", 34568)
+
+    # Handle particle event
+    def handle_music_processing_event(event):
+        """Receives an event from the server to turn on/off audio processing."""
+        data = json.loads(event.data).get("data")
+
+        # data is 0 or 1
+        value = int(data)
+        if value:
+            print("starting audio processing")
+            audio_processor.state = APStates.VOL
+        else:
+            print("stopping audio processing")
+            audio_processor.state = APStates.OFF
+
+    photon.cloud_subscribe(PHOTON_MUSIC_PROCESSING_EVENT_NAME, handle_music_processing_event)
+
+    # Wait for signal to close
     try:
         signal.pause()
     except:

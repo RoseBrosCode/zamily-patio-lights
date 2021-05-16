@@ -1,4 +1,5 @@
 import React from 'react';
+import Box from '@material-ui/core/Box';
 
 export default function ErrorBlock(props) {
 
@@ -21,21 +22,23 @@ export default function ErrorBlock(props) {
 
   return (
     <>
-      {props.errorMsgs.length > 0 &&
-        <div>
+      <Box pb={2}>
+        {props.errorMsgs.length > 0 &&
           <div>
-            <h3>Error: </h3>
             <div>
-              {props.errorMsgs.map((msg, idx) =>
-                <div key={idx}>{msg} <button id={idx} onClick={(e) => {updateErrorMsgs(e.target.id)}}>X</button></div>
-              )}
+              <Box fontWeight="fontWeightBold" fontSize="1em">Something Went Wrong </Box>
+              <div>
+                {props.errorMsgs.map((msg, idx) =>
+                  <div key={idx}>{msg} <button id={idx} onClick={(e) => {updateErrorMsgs(e.target.id)}}>X</button></div>
+                )}
+              </div>
+            </div>
+            <div>
+              <button onClick={() => {clearErrorMsgs()}}>Clear All</button>
             </div>
           </div>
-          <div>
-            <button onClick={() => {clearErrorMsgs()}}>Clear All</button>
-          </div>
-        </div>
-      }
+        }
+      </Box>
     </>
   ) 
 }

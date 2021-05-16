@@ -1,10 +1,11 @@
 import React from 'react';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 
 export default function DirectionButtons(props) {
     return (
         <>
-          <p>Choose direction:</p>
+          <Box>Choose direction:</Box>
           <Button
             name="leftDirectionButton"
             variant="contained"

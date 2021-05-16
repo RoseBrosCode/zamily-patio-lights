@@ -1,9 +1,10 @@
 import React from 'react';
+import Box from '@material-ui/core/Box';
 
 export default function NoConfig() {
   return (
     <div>
-      <p>No Configuration Required</p>
+      <Box pb={2}>No Configuration Required</Box>
     </div>
   )
 }
