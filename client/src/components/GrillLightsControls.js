@@ -145,8 +145,6 @@ export default function GrillLightsControls(props) {
           console.log('Animations State Fetch Response:', data);
           if (["animation", "r", "g", "b", "speed", "direction", "density", "tailLength"].every(e => e in data)) {
             // animation data should be good to go
-            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message - success ani fetch"])
-            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message 2 - success ani fetch 2"])
             updateEntireState(data);
           } else {
             setErrorMsgs(errorMsgs => [...errorMsgs, "Couldn't read the current animation state of the lights from the server. Arbitrary defaults set."])
