@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 import useUpdateServer from 'hooks/useUpdateServer';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import ErrorBlock from 'components/ErrorBlock'
@@ -40,8 +41,6 @@ export default function LightsOnOff() {
           console.log('Lights State Fetch Response::', data);
           if ("stringsOn" in data && "grillOn" in data) {
             // power data should be good to go
-            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message - success lights fetch"])
-            // setErrorMsgs(errorMsgs => [...errorMsgs, "Test Error Message 2 - success lights fetch 2"])
             setLightsPower({
               stringsOn: data.stringsOn,
               grillOn: data.grillOn
@@ -131,38 +130,52 @@ export default function LightsOnOff() {
         {errorMsgs.length > 0 &&
           <ErrorBlock errorMsgs={errorMsgs} setErrorMsgs={setErrorMsgs}/>
         }
-        <Button
-          name="strings"
-          variant="contained"
-          color={lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
-          onClick={handleClick}
-        >
-          Strings Only
-        </Button>
-        <Button
-          name="grill"
-          variant="contained"
-          color={!lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
-          onClick={handleClick}
-        >
-          Grill Only
-        </Button>
-        <Button
-          name="bothOn"
-          variant="contained"
-          color={lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
-          onClick={handleClick}
-        >
-          Both On
-        </Button>
-        <Button
-          name="bothOff"
-          variant="contained"
-          color={!lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
-          onClick={handleClick}
-        >
-          Both Off
-        </Button>
+        <Grid container align="center" alignItems="center" justify="center" spacing={2}>
+          <Grid item lg={3} xs={6}>
+            <Button
+              fullWidth
+              name="strings"
+              variant="contained"
+              color={lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+              onClick={handleClick}
+            >
+              Strings Only
+            </Button>
+          </Grid>
+          <Grid item lg={3} xs={6}>
+            <Button
+              fullWidth
+              name="grill"
+              variant="contained"
+              color={!lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+              onClick={handleClick}
+            >
+              Grill Only
+            </Button>
+          </Grid>
+          <Grid item lg={3} xs={6}>
+            <Button
+              fullWidth
+              name="bothOn"
+              variant="contained"
+              color={lightsPower.stringsOn && lightsPower.grillOn ? 'primary' : 'default'}
+              onClick={handleClick}
+            >
+              Both On
+            </Button>
+          </Grid>
+          <Grid item lg={3} xs={6}>
+            <Button
+              fullWidth
+              name="bothOff"
+              variant="contained"
+              color={!lightsPower.stringsOn && !lightsPower.grillOn ? 'primary' : 'default'}
+              onClick={handleClick}
+            >
+              Both Off
+            </Button>
+          </Grid>
+        </Grid>
       </Box>
     )
   }
