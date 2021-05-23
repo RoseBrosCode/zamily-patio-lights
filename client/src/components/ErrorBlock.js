@@ -1,5 +1,13 @@
 import React from 'react';
 import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 export default function ErrorBlock(props) {
 
@@ -13,31 +21,31 @@ export default function ErrorBlock(props) {
     props.setErrorMsgs(toDelete)
   }
 
-  /**
-   * Uses the state setter passed through props (setErrorMsgs) to directly update the error React state when users clears all errors
-   */
-  function clearErrorMsgs() {
-    props.setErrorMsgs([])
-  }
-
   return (
     <>
       <Box pb={2}>
-        {props.errorMsgs.length > 0 &&
-          <div>
-            <div>
-              <Box fontWeight="fontWeightBold" fontSize="1em">Something Went Wrong </Box>
-              <div>
+        <Paper style={{"background-color": "#f44336"}} elevation={2}>
+        <Box px={2} py={1} fontWeight="fontWeightBold" fontSize="1.1em">An Error Occurred</Box>
+        <Divider />
+          {props.errorMsgs.length > 0 &&
+            <Box pb={1}>
+              <List disablePadding dense>
                 {props.errorMsgs.map((msg, idx) =>
-                  <div key={idx}>{msg} <button id={idx} onClick={(e) => {updateErrorMsgs(e.target.id)}}>X</button></div>
+                  <ListItem divider key={idx}>
+                    <ListItemText
+                      primary={msg}
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton edge="end" aria-label="delete" onClick={(e) => {updateErrorMsgs(e.target.id)}}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
                 )}
-              </div>
-            </div>
-            <div>
-              <button onClick={() => {clearErrorMsgs()}}>Clear All</button>
-            </div>
-          </div>
-        }
+              </List>
+            </Box>
+          }
+        </Paper>
       </Box>
     </>
   ) 
