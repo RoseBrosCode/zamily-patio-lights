@@ -18,14 +18,14 @@ logger = logging.getLogger(FLASK_NAME)
 
 TRANSFORMATION_FUNCTIONS = {
     # Transforms speed from 0.0-1.0 float to a frame counter value for the photon.
-    "speed": lambda s: quantize(denormalize_to_range(s, 15, 0), list(range(16))),
-    "density": lambda d: denormalize_to_range(d, 0.0, 0.99)
+    "speed": lambda s: quantize(denormalize_to_range(s, 100, 0), list(range(101))),
+    "density": lambda d: denormalize_to_range(d, 0.01, 0.99)
 }
 
 DETRANSFORMATION_FUNCTIONS = {
     # Detransforms speed from a frame counter value from the photon to a 0.0-1.0 float for the client.
-    "speed": lambda s: normalize_from_range(s, 15, 0),
-    "density": lambda d: normalize_from_range(d, 0.0, 0.99)
+    "speed": lambda s: normalize_from_range(s, 100, 0),
+    "density": lambda d: normalize_from_range(d, 0.01, 0.99)
 }
 
 
