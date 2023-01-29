@@ -13,6 +13,7 @@ services:
       - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
       - ABODE_USERNAME=${ABODE_USERNAME}
       - ABODE_PASSWORD=${ABODE_PASSWORD}
+      - HA_TOKEN=${HA_TOKEN}
 
   development-server:
     build:
@@ -27,6 +28,7 @@ services:
       - PARTICLE_ACCESS_TOKEN=${PARTICLE_ACCESS_TOKEN}
       - ABODE_USERNAME=${ABODE_USERNAME}
       - ABODE_PASSWORD=${ABODE_PASSWORD}
+      - HA_TOKEN=${HA_TOKEN}
 
   development:
     build:

@@ -1,30 +1,43 @@
 import os
-import abodepy
 import logging
+logging.getLogger().setLevel(logging.DEBUG)
+import requests
+from homeassistant_api import Client as HaClient
+import abodepy
 from flask import Flask, request, jsonify
 
-from constants import FLASK_NAME, AnimationType
+from constants import FLASK_NAME, AnimationType, HA_URL, HA_PATIO_STRINGS_ID, HA_GRILL_LIGHTS_ID
 from clients.particle import Particle, DETRANSFORMATION_FUNCTIONS
-
 
 app = Flask(FLASK_NAME, static_folder='../client/build', static_url_path='/')
 logger = logging.getLogger(FLASK_NAME)
 
 particle = Particle()
 
-abode = abodepy.Abode(username=os.environ['ABODE_USERNAME'],
-                      password=os.environ['ABODE_PASSWORD'],
-                      get_devices=True)
+ha = HaClient(HA_URL, os.environ['HA_TOKEN'])
+logger.debug("ha client set")
 
 # Set up key devices
-# Inner Patio Strings ID: ZW:00000015 UUID: 57229489a414a5e8b19c96335e646235
-abode_inner_strings = abode.get_device("ZW:00000015")
+logger.info(f"patio strings id from constant: {HA_PATIO_STRINGS_ID}")
+ha_patio_strings = ha.get_entity(entity_id=HA_PATIO_STRINGS_ID)
+ha_grill_lights = ha.get_entity(entity_id=HA_GRILL_LIGHTS_ID)
+ha_light_services = ha.get_domain("light")
 
-# Outer Patio Strings ID: ZW:00000016 UUID: 5595485c4525585c6ebe28f5fdaceb8c
-abode_outer_strings = abode.get_device("ZW:00000016")
+logger.info(f"ha strings object: {ha_patio_strings}")
+logger.info(f"light services object: {ha_light_services}")
 
-# Patio Grill Lights ID: ZW:00000017 UUID: cd1954d5f33cf69d4172e4fe1d
-abode_grill_lights = abode.get_device("ZW:00000017")
+# abode = abodepy.Abode(username=os.environ['ABODE_USERNAME'],
+#                       password=os.environ['ABODE_PASSWORD'],
+#                       get_devices=True)
+
+# # Inner Patio Strings ID: ZW:00000015 UUID: 57229489a414a5e8b19c96335e646235
+# abode_inner_strings = abode.get_device("ZW:00000015")
+
+# # Outer Patio Strings ID: ZW:00000016 UUID: 5595485c4525585c6ebe28f5fdaceb8c
+# abode_outer_strings = abode.get_device("ZW:00000016")
+
+# # Patio Grill Lights ID: ZW:00000017 UUID: cd1954d5f33cf69d4172e4fe1d
+# abode_grill_lights = abode.get_device("ZW:00000017")
 
 
 @app.route('/')
@@ -43,16 +56,12 @@ def get_state():
     if request.args.get('component') is None or request.args.get('component') == 'power':
         power_state = {}
 
-        # Refresh abode device state
-        abode_inner_strings.refresh()
-        abode_grill_lights.refresh()
-
-        if abode_inner_strings.is_on: # assume inner and outer strings are same - choosing inner here is arbitrary
+        if ha_patio_strings.state.state == "on": # assume inner and outer strings are same - choosing inner here is arbitrary
             power_state['stringsOn'] = True
         else:
             power_state['stringsOn'] = False
 
-        if abode_grill_lights.is_on: 
+        if ha_grill_lights.state.state == "on": 
             power_state['grillOn'] = True
         else:
             power_state['grillOn'] = False
@@ -99,15 +108,13 @@ def update_lights_state():
     logger.info(f"lights update: {target_light_state}")
 
     if target_light_state['stringsOn']:
-        abode_inner_strings.switch_on()
-        abode_outer_strings.switch_on()
+        ha_light_services.turn_on(entity_id=HA_PATIO_STRINGS_ID)
     elif not target_light_state['stringsOn']:
-        abode_inner_strings.switch_off()
-        abode_outer_strings.switch_off()
+        ha_light_services.turn_off(entity_id=HA_PATIO_STRINGS_ID)
 
     if target_light_state['grillOn']:
-        abode_grill_lights.switch_on()
+        ha_light_services.turn_on(entity_id=HA_GRILL_LIGHTS_ID) 
     elif not target_light_state['grillOn']:
-        abode_grill_lights.switch_off()
+        ha_light_services.turn_off(entity_id=HA_GRILL_LIGHTS_ID) 
 
     return '', 200

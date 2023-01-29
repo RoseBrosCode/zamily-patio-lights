@@ -3,8 +3,9 @@
 ###################################
 FROM python:3.8-slim-buster as server
 # Setup variables
+# KEEP GUNICORN_WORKERS AT 1 - Home Assistant didn't like multiple.
 ENV GUNICORN_DIRECTORY=/server/gunicorn \
-    GUNICORN_WORKERS=3 \
+    GUNICORN_WORKERS=1 \
     GUNICORN_WORKER_CLASS=gevent \
     GUNICORN_BACKLOG=2048 \
     GUNICORN_BIND=0.0.0.0:80 \
