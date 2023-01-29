@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "b0e4f4629027dd2a2f96a9e639fcaa309aa93c1da1a80c1a300d25a9dc2af95c"
+            "sha256": "99df759baa40dd5f1171e7ffa8985a155d5e179c59d4fe8f8b99c46efeda95ce"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,13 +16,6 @@
         ]
     },
     "default": {
-        "abodepy": {
-            "hashes": [
-                "sha256:9912be3680815d5d0d71e3156935b748efbf4d2a4063aeb83d48be987eb4189f"
-            ],
-            "index": "pypi",
-            "version": "==1.2.2"
-        },
         "aiodns": {
             "hashes": [
                 "sha256:2b19bc5f97e5c936638d28e665923c093d8af2bf3aa88d35c43417fa25d136a2",
@@ -375,13 +368,6 @@
             ],
             "version": "==8.1.3"
         },
-        "colorlog": {
-            "hashes": [
-                "sha256:0d33ca236784a1ba3ff9c532d4964126d8a2c44f1f0cb1d2b0728196f512f662",
-                "sha256:bd94bd21c1e13fac7bd3153f4bc3a7dc0eb0974b8bc2fdf1a989e474f6e582e5"
-            ],
-            "version": "==6.7.0"
-        },
         "exceptiongroup": {
             "hashes": [
                 "sha256:327cbda3da756e2de031a3107b81ab7b3770a602c4d16ca618298c526f4bec1e",
@@ -651,13 +637,6 @@
                 "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"
             ],
             "version": "==3.1.2"
-        },
-        "lomond": {
-            "hashes": [
-                "sha256:427936596b144b4ec387ead99aac1560b77c8a78107d3d49415d3abbe79acbd3",
-                "sha256:df1dd4dd7b802a12b71907ab1abb08b8ce9950195311207579379eb3b1553de7"
-            ],
-            "version": "==0.3.3"
         },
         "markupsafe": {
             "hashes": [
