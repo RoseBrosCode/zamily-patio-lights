@@ -1,9 +1,7 @@
 import os
 import logging
-logging.getLogger().setLevel(logging.DEBUG)
-import requests
+logging.getLogger().setLevel(logging.INFO)
 from homeassistant_api import Client as HaClient
-import abodepy
 from flask import Flask, request, jsonify
 
 from constants import FLASK_NAME, AnimationType, HA_URL, HA_PATIO_STRINGS_ID, HA_GRILL_LIGHTS_ID
@@ -15,30 +13,13 @@ logger = logging.getLogger(FLASK_NAME)
 particle = Particle()
 
 ha = HaClient(HA_URL, os.environ['HA_TOKEN'])
-logger.debug("ha client set")
 
 # Set up key devices
-logger.info(f"patio strings id from constant: {HA_PATIO_STRINGS_ID}")
 ha_patio_strings = ha.get_entity(entity_id=HA_PATIO_STRINGS_ID)
 ha_grill_lights = ha.get_entity(entity_id=HA_GRILL_LIGHTS_ID)
 ha_light_services = ha.get_domain("light")
 
-logger.info(f"ha strings object: {ha_patio_strings}")
-logger.info(f"light services object: {ha_light_services}")
-
-# abode = abodepy.Abode(username=os.environ['ABODE_USERNAME'],
-#                       password=os.environ['ABODE_PASSWORD'],
-#                       get_devices=True)
-
-# # Inner Patio Strings ID: ZW:00000015 UUID: 57229489a414a5e8b19c96335e646235
-# abode_inner_strings = abode.get_device("ZW:00000015")
-
-# # Outer Patio Strings ID: ZW:00000016 UUID: 5595485c4525585c6ebe28f5fdaceb8c
-# abode_outer_strings = abode.get_device("ZW:00000016")
-
-# # Patio Grill Lights ID: ZW:00000017 UUID: cd1954d5f33cf69d4172e4fe1d
-# abode_grill_lights = abode.get_device("ZW:00000017")
-
+logger.info("Devices Set Up!")
 
 @app.route('/')
 def index():
