@@ -1,7 +1,7 @@
 ###################################
 # STAGE 1 - Install Server
 ###################################
-FROM python:3.8-slim-buster as server
+FROM python:3.9-slim-buster as server
 # Setup variables
 # KEEP GUNICORN_WORKERS AT 1 - Home Assistant didn't like multiple.
 ENV GUNICORN_DIRECTORY=/server/gunicorn \
